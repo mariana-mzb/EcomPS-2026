@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Ecommerce 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Syne:wght@700;800&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060E1A;--bg2:#0D1B2A;--bg3:#050C16;--border:#1E3A5F;--cyan:#00D4FF;--yellow:#FFD700;--orange:#FF6B35;--pink:#FF0F7B;--green:#00FF88;--red:#FF5555;--txt:#E8F4FF;--muted:#7A8FA6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;min-height:100vh}
+#dash{padding:26px 30px;max-width:1600px;margin:0 auto}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:20px;flex-wrap:wrap;gap:14px}
+.hdr-left .eyebrow{color:var(--cyan);font-size:10px;letter-spacing:4px;text-transform:uppercase;margin-bottom:5px}
+.hdr-left h1{font-family:'Syne',sans-serif;font-size:clamp(20px,3vw,28px);font-weight:800;letter-spacing:-0.5px}
+.hdr-left .sub{color:var(--muted);font-size:13px;margin-top:5px}
+.hdr-left .sub b{color:var(--cyan);font-weight:500}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.alc-box{padding:10px 16px;border-radius:10px;border:1px solid;text-align:right}
+.alc-box .al{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.alc-box .av{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;line-height:1}
+.alc-box .as{font-size:11px;color:var(--muted);margin-top:2px}
+.hdr-btn{display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:22px;font-size:12px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;font-weight:500;position:relative;transition:border-color .2s,color .2s;white-space:nowrap}
+.hdr-btn input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.hdr-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+#upload-status{font-size:12px;white-space:nowrap}
+.mfilter{display:flex;align-items:center;gap:7px;margin-bottom:18px;flex-wrap:wrap}
+.mfilter-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.mf-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 13px;border-radius:18px;font-size:12px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;font-weight:600;transition:all .15s}
+.mf-btn:hover{border-color:#2A5070;color:#8AAAC0}
+.mf-btn.on{border-color:var(--cyan);color:var(--cyan);background:#00D4FF10}
+.mf-sep{width:1px;height:16px;background:var(--border);margin:0 2px}
+.kpi-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.kpi{flex:1;min-width:150px;background:var(--bg2);border-radius:10px;padding:14px 16px;border-top:3px solid}
+.kpi .kl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.kpi .kv{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;line-height:1}
+.kpi .ks{font-size:12px;margin-top:5px;font-weight:600}
+.kpi .ke{font-size:11px;color:var(--muted);margin-top:3px}
+.grp-meta-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.grp-meta-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;border-left:3px solid}
+.grp-meta-card .gml{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.gmrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.gmv{font-family:'DM Mono',monospace;font-size:18px;font-weight:500}
+.gmsublbl{font-size:10px;color:var(--muted);margin-bottom:2px}
+.grp-meta-alc{font-family:'DM Mono',monospace;font-size:16px;font-weight:700}
+.gmprog{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:10px}
+.gmpfill{height:100%;border-radius:3px;transition:width .8s ease}
+.g2{display:grid;grid-template-columns:1fr 260px;gap:14px;margin-bottom:14px}
+.g2b{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:860px){.g2,.g2b,.grp-meta-row{grid-template-columns:1fr}}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+.card .ey{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.card .ct{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px}
+.mcards{display:flex;gap:7px;margin-top:10px}
+.mcard{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:8px 10px;transition:border-color .2s,opacity .2s}
+.mcard .ml{color:var(--muted);font-size:11px;margin-bottom:3px}
+.mcard .mv{font-family:'DM Mono',monospace;font-size:13px;font-weight:500}
+.mcard .mr{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.badge{font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid;white-space:nowrap}
+.bu{color:var(--green);background:#00FF8812;border-color:#00FF8835}
+.bd{color:var(--red);background:#FF555512;border-color:#FF555535}
+.bn{color:var(--pink);background:#FF0F7B12;border-color:#FF0F7B35}
+.leg{display:flex;gap:12px;flex-wrap:wrap}
+.leg-i{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.leg-d{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.pie-leg{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.pie-li{display:flex;justify-content:space-between;align-items:center}
+.pie-lname{display:flex;align-items:center;gap:7px;font-size:13px;color:#A0B8D0}
+.pie-ldot{width:9px;height:9px;border-radius:2px}
+.pie-lv{font-family:'DM Mono',monospace;font-size:13px;font-weight:500}
+.pie-lp{font-size:11px;color:var(--muted);margin-left:4px}
+.ch-hdr,.ch-row,.ch-tot{display:grid;grid-template-columns:170px 1fr 1fr 1fr 1fr;padding:7px 10px;align-items:center;gap:2px}
+.ch-hdr{border-bottom:1px solid var(--border);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px}
+.ch-hdr span:not(:first-child),.num{text-align:right}
+.ch-row{border-bottom:1px solid #1E3A5F18}
+.ch-row:nth-child(odd){background:#05111A}
+.ch-nm-wrap{display:flex;align-items:center;gap:8px}
+.ch-bar{width:6px;height:24px;border-radius:2px;flex-shrink:0}
+.ch-nm{font-weight:600;font-size:13px}
+.ch-grp-tag{font-size:10px;text-transform:uppercase;letter-spacing:1px}
+.num{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)}
+.num.hi{color:var(--txt);font-weight:600}
+.ch-tot{border-top:2px solid var(--border);background:#00D4FF07;margin-top:1px}
+.tabs{display:flex;gap:5px;flex-wrap:wrap}
+.tab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 11px;border-radius:18px;font-size:11px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;font-weight:600;transition:all .15s}
+.tab:hover{border-color:#2A5070;color:#8AAAC0}
+.tab.on{border-color:var(--cyan);color:var(--cyan);background:#00D4FF10}
+.sy-row{display:flex;gap:10px}
+.sy-card{flex:1;background:var(--bg3);border-radius:8px;padding:12px;border:1px solid}
+.sy-yr{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:8px}
+.sy-l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.sy-v{font-family:'DM Mono',monospace;font-weight:500;margin-bottom:6px}
+.btrack{height:16px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:3px}
+.bfill{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:5px}
+.bfill span{font-size:10px;font-weight:800;color:var(--bg)}
+.share-note{margin-top:10px;padding:8px 12px;background:#FF0F7B0C;border:1px solid #FF0F7B22;border-radius:6px;display:flex;gap:18px;flex-wrap:wrap}
+.share-note span{font-size:12px;color:var(--muted)}
+.meta-prog{position:relative;height:34px;margin-bottom:6px}
+.meta-track{height:34px;background:var(--bg3);border-radius:8px;overflow:hidden}
+.meta-fill{height:100%;border-radius:8px;transition:width 1s ease}
+.meta-pct{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'DM Mono',monospace;font-size:16px;font-weight:500;text-shadow:0 1px 4px #00000080}
+.meta-labs{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:14px}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mi{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px}
+.mi .mil{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px}
+.mi .miv{font-family:'DM Mono',monospace;font-size:14px;font-weight:500}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-sm{width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+</style>
+</head>
+<body>
+<div id="dash">
+
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="eyebrow">Analytics Dashboard · Ecommerce</div>
+      <h1>Seguimiento de Ventas 2026</h1>
+      <div class="sub">Acumulado YTD al <b id="last-date">Marzo</b> · Comparativo vs 2025 · Alcance vs Meta</div>
+    </div>
+    <div class="hdr-right">
+      <div class="alc-box" id="alc-box" style="border-color: rgba(0, 255, 136, 0.27); background: rgba(0, 255, 136, 0.07);">
+        <div class="al">Alcance vs Meta</div>
+        <div class="av" id="alc-val" style="color: var(--green);">103.5%</div>
+        <div class="as" id="alc-sub" style="color: var(--green);">A favor: $1,377,695</div>
+      </div>
+      <label class="hdr-btn">
+        <input type="file" id="file-input" accept=".xlsx,.xls">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <span id="btn-label">Actualizar</span>
+      </label>
+      <button class="hdr-btn" onclick="downloadHTML()" onmouseover="this.style.borderColor='var(--cyan)';this.style.color='var(--cyan)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'" style="border-color: var(--cyan); color: var(--cyan);">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        Descargar HTML
+      </button>
+      <span id="upload-status" style="color: var(--green);"></span>
+    </div>
+  </div>
+
+  <div class="mfilter" id="mfilter">
+    <span class="mfilter-label">Período</span>
+    <button class="mf-btn" data-m="todos">YTD Acumulado</button>
+    <div class="mf-sep"></div>
+  <button class="mf-btn" data-m="1">Enero</button><button class="mf-btn" data-m="2">Febrero</button><button class="mf-btn on" data-m="3">Marzo*</button></div>
+
+  <div class="kpi-row">
+    <div class="kpi" style="border-top-color:var(--cyan)">
+      <div class="kl">Ecommerce Total 2026</div>
+      <div class="kv" id="k-e26">$40.9M</div>
+      <div class="ks" style="color:var(--cyan)" id="k-ediff">+$9.4M vs 2025</div>
+      <div class="ke" id="k-ecrec">Crecimiento: +29.7%</div>
+    </div>
+    <div class="kpi" style="border-top-color:var(--yellow)">
+      <div class="kl">Meta Total 2026</div>
+      <div class="kv" id="k-meta">$39.5M</div>
+      <div class="ks" style="color:var(--yellow)" id="k-malc">Alcance: 103.5%</div>
+      <div class="ke" id="k-mdeuda">A favor: $1,377,695</div>
+    </div>
+    <div class="kpi" style="border-top-color:var(--orange)">
+      <div class="kl">Global Tiendas 2026</div>
+      <div class="kv" id="k-g26">$399.2M</div>
+      <div class="ks" style="color:var(--orange)" id="k-g25">Global 2025: $375.1M</div>
+      <div class="ke" id="k-gyoy">YoY Global: +6.4%</div>
+    </div>
+    <div class="kpi" style="border-top-color:var(--pink)">
+      <div class="kl">Share Ecom / Global</div>
+      <div class="kv" id="k-sh26">10.2%</div>
+      <div class="ks" style="color:var(--pink)" id="k-sh25">2025: 8.4%</div>
+      <div class="ke" id="k-shdelta">Δ share: +1.8%</div>
+    </div>
+  </div>
+
+  <!-- GROUP META CARDS -->
+  <div class="grp-meta-row">
+    <div class="grp-meta-card" style="border-left-color:var(--cyan)">
+      <div class="gml">Digital — Alcance vs Meta</div>
+      <div class="gmrow">
+        <div><div class="gmsublbl">Venta</div><div class="gmv" id="gm-dig-v" style="color:var(--cyan)">$35.7M</div></div>
+        <div><div class="gmsublbl">Meta</div><div class="gmv" id="gm-dig-m" style="color:var(--muted)">$32.8M</div></div>
+        <div><div class="gmsublbl">Alcance</div><div class="grp-meta-alc" id="gm-dig-alc" style="color: var(--green);">108.8%</div></div>
+      </div>
+      <div class="gmprog"><div class="gmpfill" id="gm-dig-bar" style="width: 100%; background: var(--green); height: 100%; border-radius: 3px; transition: width 0.8s;"></div></div>
+    </div>
+    <div class="grp-meta-card" style="border-left-color:var(--yellow)">
+      <div class="gml">Mktplace — Alcance vs Meta</div>
+      <div class="gmrow">
+        <div><div class="gmsublbl">Venta</div><div class="gmv" id="gm-mk-v" style="color:var(--yellow)">$5.2M</div></div>
+        <div><div class="gmsublbl">Meta</div><div class="gmv" id="gm-mk-m" style="color:var(--muted)">$6.7M</div></div>
+        <div><div class="gmsublbl">Alcance</div><div class="grp-meta-alc" id="gm-mk-alc" style="color: var(--orange);">77.5%</div></div>
+      </div>
+      <div class="gmprog"><div class="gmpfill" id="gm-mk-bar" style="width: 77.5248%; background: var(--yellow); height: 100%; border-radius: 3px; transition: width 0.8s;"></div></div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="ey">Evolución Mensual</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div class="ct" style="margin-bottom:0">Ecommerce vs Meta</div>
+        <div class="leg">
+          <div class="leg-i"><div class="leg-d" style="background:#1E3A5F"></div>Ecom 2025</div>
+          <div class="leg-i"><div class="leg-d" style="background:var(--cyan)"></div>Ecom 2026</div>
+          <div class="leg-i"><div class="leg-d" style="background:var(--yellow);opacity:.8"></div>Meta</div>
+        </div>
+      </div>
+      <div style="position:relative;height:180px"><canvas id="chart-m" style="box-sizing: border-box; display: block; height: 180px; width: 1228px;" width="1381" height="202"></canvas></div>
+      <div class="mcards" id="mcards"><div class="mcard" style="opacity:0.3;border-color:var(--border)">
+      <div class="ml">Enero</div><div class="mv">$99.6M</div>
+      <div class="mr"><span class="badge bu">+13.3%</span>
+      <span style="font-size:11px;color:var(--yellow)">Alc: 90.5%</span></div></div><div class="mcard" style="opacity:0.3;border-color:var(--border)">
+      <div class="ml">Febrero</div><div class="mv">$93.9M</div>
+      <div class="mr"><span class="badge bu">+21.3%</span>
+      <span style="font-size:11px;color:var(--green)">Alc: 100.3%</span></div></div><div class="mcard" style="opacity:1;border-color:var(--cyan)">
+      <div class="ml">Marzo*</div><div class="mv">$40.9M</div>
+      <div class="mr"><span class="badge bu">+29.7%</span>
+      <span style="font-size:11px;color:var(--green)">Alc: 103.5%</span></div></div></div>
+    </div>
+    <div class="card">
+      <div class="ey">Mix de Canales 2026</div>
+      <div class="ct">Participación por Grupo</div>
+      <div style="position:relative;height:148px"><canvas id="chart-pie" style="box-sizing: border-box; display: block; height: 148px; width: 222px;" width="249" height="166"></canvas></div>
+      <div class="pie-leg" id="pie-leg"><div class="pie-li">
+    <div class="pie-lname"><div class="pie-ldot" style="background:#00D4FF"></div>Digital</div>
+    <div><span class="pie-lv">$35.7M</span><span class="pie-lp">87.2%</span></div></div><div class="pie-li">
+    <div class="pie-lname"><div class="pie-ldot" style="background:#FFD700"></div>Mktplace</div>
+    <div><span class="pie-lv">$5.2M</span><span class="pie-lp">12.8%</span></div></div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;padding:16px 0">
+    <div style="padding:0 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div class="ey">Desglose por Canal</div>
+        <div class="ct" style="margin-bottom:0">Ventas · Meta · Alcance · Crecimiento YoY</div>
+      </div>
+      <div class="tabs" id="tabs" style="row-gap:6px;">
+        <button class="tab on" data-g="Todos">Todos</button>
+        <div style="width:1px;height:20px;background:var(--border);align-self:center;margin:0 2px"></div>
+        <button class="tab" data-g="Digital">Digital</button>
+        <button class="tab" data-g="Web + APP">Web+APP</button>
+        <button class="tab" data-g="Afiliados">Afiliados</button>
+        <button class="tab" data-g="RMK (TMK)">RMK</button>
+        <button class="tab" data-g="WA">WA</button>
+        <button class="tab" data-g="Ent. en Tienda">Ent.Tienda</button>
+        <div style="width:1px;height:20px;background:var(--border);align-self:center;margin:0 2px"></div>
+        <button class="tab" data-g="Mktplace">Mktplace</button>
+        <button class="tab" data-g="MELI">MELI</button>
+        <button class="tab" data-g="Amazon">Amazon</button>
+        <button class="tab" data-g="TikTok">TikTok</button>
+        <button class="tab" data-g="Shein">Shein</button>
+      </div>
+    </div>
+    <div style="padding:0 6px">
+      <div class="ch-hdr">
+        <span>Canal</span><span>2025 YTD</span><span>2026 YTD</span>
+        <span>Part. %</span><span>Crecimiento</span>
+      </div>
+      <div id="ch-rows"><div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:#00D4FF"></div>
+        <div><div class="ch-nm">Web + APP</div><div class="ch-grp-tag" style="color:#00D4FF">Digital</div></div></div>
+      <div class="num">$25.0M</div>
+      <div class="num hi">$34.2M</div>
+      <div style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:83.7%;height:100%;background:#00D4FF;border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#00D4FF">83.7%</span>
+    </div></div>
+      <div style="text-align:right"><span class="badge bu">+36.7%</span></div></div><div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:#0099CC"></div>
+        <div><div class="ch-nm">Afiliados</div><div class="ch-grp-tag" style="color:#00D4FF">Digital</div></div></div>
+      <div class="num">$0.2M</div>
+      <div class="num hi">$0.2M</div>
+      <div style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:0.6%;height:100%;background:#0099CC;border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#0099CC">0.6%</span>
+    </div></div>
+      <div style="text-align:right"><span class="badge bu">+18.6%</span></div></div><div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:#336699"></div>
+        <div><div class="ch-nm">RMK (TMK)</div><div class="ch-grp-tag" style="color:#00D4FF">Digital</div></div></div>
+      <div class="num">$0.5M</div>
+      <div class="num hi">$0.3M</div>
+      <div style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:0.7%;height:100%;background:#336699;border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#336699">0.7%</span>
+    </div></div>
+      <div style="text-align:right"><span class="badge bd">-38.4%</span></div></div><div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:#1A4477"></div>
+        <div><div class="ch-nm">WA</div><div class="ch-grp-tag" style="color:#00D4FF">Digital</div></div></div>
+      <div class="num">$0.1M</div>
+      <div class="num hi">$0.0M</div>
+      <div style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:0.1%;height:100%;background:#1A4477;border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#1A4477">0.1%</span>
+    </div></div>
+      <div style="text-align:right"><span class="badge bd">-43.6%</span></div></div><div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:#00AACC"></div>
+        <div><div class="ch-nm">Ent. en Tienda</div><div class="ch-grp-tag" style="color:#00D4FF">Digital</div></div></div>
+      <div class="num">$0.7M</div>
+      <div class="num hi">$0.9M</div>
+      <div style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:2.2%;height:100%;background:#00AACC;border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#00AACC">2.2%</span>
+    </div></div>
+      <div style="text-align:right"><span class="badge bu">+25.8%</span></div></div><div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:#FFD700"></div>
+        <div><div class="ch-nm">Meli Drop</div><div class="ch-grp-tag" style="color:#FFD700">Mktplace</div></div></div>
+      <div class="num">$3.9M</div>
+      <div class="num hi">$4.5M</div>
+      <div style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:10.9%;height:100%;background:#FFD700;border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#FFD700">10.9%</span>
+    </div></div>
+      <div style="text-align:right"><span class="badge bu">+15.3%</span></div></div><div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:#FFA500"></div>
+        <div><div class="ch-nm">Meli Full</div><div class="ch-grp-tag" style="color:#FFD700">Mktplace</div></div></div>
+      <div class="num">$1.0M</div>
+      <div class="num hi">$0.6M</div>
+      <div style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:1.5%;height:100%;background:#FFA500;border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#FFA500">1.5%</span>
+    </div></div>
+      <div style="text-align:right"><span class="badge bd">-36.4%</span></div></div><div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:#FF8C00"></div>
+        <div><div class="ch-nm">Amazon Drop</div><div class="ch-grp-tag" style="color:#FFD700">Mktplace</div></div></div>
+      <div class="num">$0.2M</div>
+      <div class="num hi">$0.1M</div>
+      <div style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:0.3%;height:100%;background:#FF8C00;border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#FF8C00">0.3%</span>
+    </div></div>
+      <div style="text-align:right"><span class="badge bd">-38.7%</span></div></div><div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:#CC6600"></div>
+        <div><div class="ch-nm">Amazon Full</div><div class="ch-grp-tag" style="color:#FFD700">Mktplace</div></div></div>
+      <div class="num">$0.1M</div>
+      <div class="num hi">$0.1M</div>
+      <div style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:0.1%;height:100%;background:#CC6600;border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#CC6600">0.1%</span>
+    </div></div>
+      <div style="text-align:right"><span class="badge bd">-12.2%</span></div></div><div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:#FF0F7B"></div>
+        <div><div class="ch-nm">TikTok</div><div class="ch-grp-tag" style="color:#FFD700">Mktplace</div></div></div>
+      <div class="num">—</div>
+      <div class="num hi">$0.0M</div>
+      <div style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:0.0%;height:100%;background:#FF0F7B;border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#FF0F7B">0.0%</span>
+    </div></div>
+      <div style="text-align:right"><span class="badge bn">NUEVO</span></div></div><div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:#CC0055"></div>
+        <div><div class="ch-nm">Shein</div><div class="ch-grp-tag" style="color:#FFD700">Mktplace</div></div></div>
+      <div class="num">—</div>
+      <div class="num hi">$0.0M</div>
+      <div style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:0.0%;height:100%;background:#CC0055;border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#CC0055">0.0%</span>
+    </div></div>
+      <div style="text-align:right"><span class="badge bn">NUEVO</span></div></div></div>
+      <div class="ch-tot" id="ch-tot">
+    <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--cyan);letter-spacing:1px;text-transform:uppercase">TOTAL ECOM</div>
+    <div class="num" style="text-align:right">$31.5M</div>
+    <div class="num hi" style="text-align:right;color:var(--cyan);font-size:13px">$40.9M</div>
+    <div style="text-align:right">
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--cyan)">100.0%</span>
+    </div>
+    <div style="text-align:right"><span class="badge bu">+29.7%</span></div></div>
+    </div>
+  </div>
+
+  <div class="g2b">
+    <div class="card">
+      <div class="ey">Penetración Ecommerce</div>
+      <div class="ct">Ecommerce vs Total Global (YoY)</div>
+      <div class="sy-row" id="sy-row"><div class="sy-card" style="border-color:#1E3A5F55">
+    <div class="sy-yr" style="color:var(--muted)">2025</div>
+    <div class="sy-l">Ecommerce</div><div class="sy-v">$31.5M</div>
+    <div class="sy-l">Global Tiendas</div><div class="sy-v">$375.1M</div>
+    <div class="sy-l" style="margin-bottom:5px">Share</div>
+    <div class="btrack" style="height:22px;border-radius:5px">
+      <div class="bfill" style="width:8.404152245152643%;background:#3A5F88;height:100%;border-radius:5px"></div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:#FFFFFF;margin-top:5px;letter-spacing:-0.5px">8.4%</div>
+    </div><div class="sy-card" style="border-color:#00D4FF33">
+    <div class="sy-yr" style="color:var(--cyan)">2026</div>
+    <div class="sy-l">Ecommerce</div><div class="sy-v">$40.9M</div>
+    <div class="sy-l">Global Tiendas</div><div class="sy-v">$399.2M</div>
+    <div class="sy-l" style="margin-bottom:5px">Share</div>
+    <div class="btrack" style="height:22px;border-radius:5px">
+      <div class="bfill" style="width:10.2448209339681%;background:var(--cyan);height:100%;border-radius:5px"></div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:#FFFFFF;margin-top:5px;letter-spacing:-0.5px">10.2%</div>
+    </div></div>
+      <div class="share-note" id="share-note"><span>Ganancia share: <strong style="color:var(--pink)">+1.84 pp</strong></span>
+    <span>Global YoY: <strong style="color:var(--red)">+6.4%</strong></span></div>
+    </div>
+    <div class="card">
+      <div class="ey">Alcance de Meta Total</div>
+      <div class="ct">Ecommerce YTD vs Meta Acumulada</div>
+      <div class="meta-prog">
+        <div class="meta-track"><div class="meta-fill" id="mfill" style="width: 100%; background: linear-gradient(90deg, rgb(0, 212, 255), rgb(0, 255, 136));"></div></div>
+        <div class="meta-pct" id="mpct" style="color: var(--green);">103.5%</div>
+      </div>
+      <div class="meta-labs"><span>$0</span><span style="color:var(--yellow)" id="mlab-mid">Meta: $39.5M</span><span id="mlab-end">$41.5M</span></div>
+      <div class="meta-grid" id="meta-grid"><div class="mi"><div class="mil">Venta Ecom 2026</div><div class="miv" style="color:var(--cyan)">$40.9M</div></div><div class="mi"><div class="mil">Meta Acumulada</div><div class="miv" style="color:var(--yellow)">$39.5M</div></div><div class="mi"><div class="mil">A Favor</div><div class="miv" style="color:var(--green)">$1,377,695</div></div><div class="mi"><div class="mil">Crecimiento vs 2025</div><div class="miv" style="color:var(--pink)">+29.7%</div></div></div>
+    </div>
+  </div>
+
+</div>
+
+<script id="main-script">
+const $ = id => document.getElementById(id);
+const fM = n => `$${(n/1e6).toFixed(1)}M`;
+const fC = n => new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0}).format(n);
+const pp = n => `${(n*100).toFixed(1)}%`;
+const pn = n => (n>=0?'+':'')+`${(n*100).toFixed(1)}%`;
+
+const CHAN = [
+  {name:'Web + APP',      c25:'Web + APP 2025',     c26:'Web + APP 2026',     g:'Digital',  col:'#00D4FF'},
+  {name:'Afiliados',      c25:'Afiliados 2025',      c26:'Afiliados 2026',     g:'Digital',  col:'#0099CC'},
+  {name:'RMK (TMK)',      c25:'TMK 2025',            c26:'TMK 2026',           g:'Digital',  col:'#336699'},
+  {name:'WA',             c25:'WA 2025',             c26:'WA 2026',            g:'Digital',  col:'#1A4477'},
+  {name:'Ent. en Tienda', c25:'Ent. en Tienda 2025', c26:'Ent. en Tienda 2026',g:'Digital',  col:'#00AACC'},
+  {name:'Meli Drop',      c25:'Meli Drop 2025',      c26:'Meli Drop 2026',     g:'Mktplace', col:'#FFD700'},
+  {name:'Meli Full',      c25:'Meli Full 2025',      c26:'Meli Full 2026',     g:'Mktplace', col:'#FFA500'},
+  {name:'Amazon Drop',    c25:'Amazon Drop 2025',    c26:'Amazon Drop 2026',   g:'Mktplace', col:'#FF8C00'},
+  {name:'Amazon Full',    c25:'Amazon Full 2025',    c26:'Amazon Full 2026',   g:'Mktplace', col:'#CC6600'},
+  {name:'TikTok',         c25:'TikTok 2025',         c26:'TikTo 2026',         g:'Mktplace', col:'#FF0F7B'},
+  {name:'Shein',          c25:'Shein 2025',          c26:'Shein 2026',         g:'Mktplace', col:'#CC0055'},
+];
+const GC = {Digital:'#00D4FF', Mktplace:'#FFD700'};
+const MES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Sep','Oct','Nov','Dic'];
+
+function parse(ab){
+  const wb=XLSX.read(ab,{type:'array',cellDates:true});
+  const ws=wb.Sheets['BD'];
+  if(!ws) throw new Error("No se encontró la hoja 'BD'");
+  const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+  const hdr=raw[2];
+  const ci=n=>hdr.indexOf(n);
+  const gc=(r,n)=>{const i=ci(n);return i>=0&&r[i]!=null?Number(r[i])||0:0;};
+  // Col[0]=Fecha2025, Col[1]=Global2025(ventas), Col[4]=Global2026(ventas), Col[5]=Fecha2026
+  const gv25=(r)=>r[1]!=null?Number(r[1])||0:0;
+  const gv26=(r)=>r[4]!=null?Number(r[4])||0:0;
+  const all=raw.slice(3).filter(r=>{const d=r[0];return d instanceof Date||(typeof d==='string'&&!isNaN(Date.parse(d)));});
+  const r26=all.filter(r=>gc(r,'Web + APP 2026')!==0||gc(r,'Meli Drop 2026')!==0);
+  const n=r26.length, r25=all.slice(0,n);
+  const ld=r26[n-1]?.[ci('2026')], ldt=ld instanceof Date?ld:new Date(ld);
+  const lastDate=isNaN(ldt)?'N/A':ldt.toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
+  const mm={};
+  r26.forEach((r,i)=>{
+    const d=r[ci('2026')],dt=d instanceof Date?d:new Date(d),m=dt.getMonth()+1;
+    if(!mm[m]) mm[m]={e25:0,e26:0,g25:0,g26:0,meta:0,metaDigital:0,metaMktplace:0,days:0,channels:{}};
+    CHAN.forEach(ch=>{
+      if(!mm[m].channels[ch.name]) mm[m].channels[ch.name]={v25:0,v26:0};
+      mm[m].channels[ch.name].v25+=gc(r25[i]||[],ch.c25);
+      mm[m].channels[ch.name].v26+=gc(r,ch.c26);
+    });
+    mm[m].e25+=CHAN.reduce((a,ch)=>a+gc(r25[i]||[],ch.c25),0);
+    mm[m].e26+=CHAN.reduce((a,ch)=>a+gc(r,ch.c26),0);
+    mm[m].g25+=gv25(r25[i]||[]);
+    mm[m].g26+=gv26(r);
+    mm[m].meta+=gc(r,'Venta Meta 2026');
+    mm[m].metaDigital+=gc(r,'Meta Digital');
+    mm[m].metaMktplace+=gc(r,'Meta MKPlace');
+    mm[m].days+=1;
+  });
+  const monthly=Object.entries(mm).sort((a,b)=>+a[0]-+b[0]).map(([m,v])=>({
+    mes:MES[+m]+(v.days<28?'*':''),mnum:+m,
+    e25:v.e25,e26:v.e26,g25:v.g25,g26:v.g26,
+    meta:v.meta,metaDigital:v.metaDigital,metaMktplace:v.metaMktplace,
+    days:v.days,channels:v.channels
+  }));
+  const channels=CHAN.map(ch=>({...ch,v25:r25.reduce((a,r)=>a+gc(r,ch.c25),0),v26:r26.reduce((a,r)=>a+gc(r,ch.c26),0)}));
+  const t25=channels.reduce((a,c)=>a+c.v25,0),t26=channels.reduce((a,c)=>a+c.v26,0);
+  const g25=r25.reduce((a,r)=>a+gv25(r),0),g26=r26.reduce((a,r)=>a+gv26(r),0);
+  const meta26=r26.reduce((a,r)=>a+gc(r,'Venta Meta 2026'),0);
+  const metaDigital=r26.reduce((a,r)=>a+gc(r,'Meta Digital'),0);
+  const metaMktplace=r26.reduce((a,r)=>a+gc(r,'Meta MKPlace'),0);
+  return {lastDate,channels,monthly,g25,g26,meta26,metaDigital,metaMktplace,t25,t26};
+}
+
+let CM=null,CP=null,ACTIVE_MONTH='todos';
+let ACTIVE_MONTHS=new Set(['todos']);
+
+function getView(d, months){
+  // months is a Set; 'todos' or empty = all
+  if(months.has('todos') || months.size===0) return d;
+  const mos = d.monthly.filter(m=>months.has(m.mnum));
+  if(!mos.length) return d;
+  // Sum across selected months
+  const channels = CHAN.map(ch=>({
+    ...ch,
+    v25: mos.reduce((a,m)=>a+(m.channels[ch.name]?.v25||0),0),
+    v26: mos.reduce((a,m)=>a+(m.channels[ch.name]?.v26||0),0)
+  }));
+  const label = mos.length===1 ? mos[0].mes.replace('*','') : mos.map(m=>m.mes.replace('*','')).join(' + ');
+  return {
+    ...d,
+    lastDate: label,
+    channels,
+    monthly: mos,
+    g25:  mos.reduce((a,m)=>a+m.g25,0),
+    g26:  mos.reduce((a,m)=>a+m.g26,0),
+    meta26: mos.reduce((a,m)=>a+m.meta,0),
+    metaDigital:  mos.reduce((a,m)=>a+m.metaDigital,0),
+    metaMktplace: mos.reduce((a,m)=>a+m.metaMktplace,0),
+    t25: channels.reduce((a,c)=>a+c.v25,0),
+    t26: channels.reduce((a,c)=>a+c.v26,0)
+  };
+}
+
+function render(d){ ACTIVE_MONTHS=new Set(['todos']); buildMonthFilter(d); renderView(getView(d,ACTIVE_MONTHS),d); }
+
+function buildMonthFilter(d){
+  const bar=$('mfilter');
+  while(bar.children.length>3) bar.removeChild(bar.lastChild);
+  d.monthly.forEach(m=>{
+    const b=document.createElement('button');
+    b.className='mf-btn'+(ACTIVE_MONTHS.has(m.mnum)?' on':'');
+    b.dataset.m=m.mnum; b.textContent=m.mes;
+    b.onclick=()=>{
+      if(ACTIVE_MONTHS.has('todos')) ACTIVE_MONTHS.clear();
+      if(ACTIVE_MONTHS.has(m.mnum)){ ACTIVE_MONTHS.delete(m.mnum); if(ACTIVE_MONTHS.size===0) ACTIVE_MONTHS.add('todos'); }
+      else ACTIVE_MONTHS.add(m.mnum);
+      applyFilter(d);
+    };
+    bar.appendChild(b);
+  });
+  const ytd=bar.querySelector('[data-m="todos"]');
+  ytd.className='mf-btn'+(ACTIVE_MONTHS.has('todos')?' on':'');
+  ytd.onclick=()=>{ACTIVE_MONTHS=new Set(['todos']);applyFilter(d);};
+}
+
+function applyFilter(d){
+  document.querySelectorAll('.mf-btn').forEach(b=>{
+    const val=isNaN(b.dataset.m)?b.dataset.m:+b.dataset.m;
+    b.classList.toggle('on', ACTIVE_MONTHS.has(val));
+  });
+  // Reset channel filters on month change
+  window._activeFilters=new Set(['Todos']);
+  document.querySelectorAll('#tabs .tab').forEach(b=>b.classList.toggle('on',b.dataset.g==='Todos'));
+  renderView(getView(d,ACTIVE_MONTHS),d);
+}
+
+function renderView(v,fullData){
+  const {lastDate,channels,monthly,g25,g26,meta26,metaDigital,metaMktplace,t25,t26}=v;
+  const eg=t25>0?(t26-t25)/t25:0, alc=meta26>0?t26/meta26:0;
+  const sh25=g25>0?t25/g25:0, sh26=g26>0?t26/g26:0;
+  const digV=channels.filter(c=>c.g==='Digital').reduce((a,c)=>a+c.v26,0);
+  const mkV =channels.filter(c=>c.g==='Mktplace').reduce((a,c)=>a+c.v26,0);
+  const digAlc=metaDigital>0?digV/metaDigital:0;
+  const mkAlc =metaMktplace>0?mkV/metaMktplace:0;
+  const ok=alc>=1;
+
+  $('last-date').textContent=lastDate;
+
+  const ab=$('alc-box');
+  ab.style.background=ok?'#00FF8812':'#FFD70012';
+  ab.style.borderColor=ok?'#00FF8845':'#FFD70045';
+  $('alc-val').style.color=ok?'var(--green)':'var(--yellow)';
+  $('alc-val').textContent=pp(alc);
+  const saldo=t26-meta26;
+  const saldoLabel=saldo>=0?'A favor: ':'Deuda: ';
+  $('alc-sub').textContent=saldoLabel+fC(Math.abs(saldo));
+  $('alc-sub').style.color=saldo>=0?'var(--green)':'var(--muted)';
+
+  $('k-e26').textContent=fM(t26);
+  $('k-ediff').textContent=(t26>=t25?'+':'')+fM(t26-t25)+' vs 2025';
+  $('k-ecrec').textContent='Crecimiento: '+pn(eg);
+  $('k-meta').textContent=fM(meta26);
+  $('k-malc').textContent='Alcance: '+pp(alc);
+  $('k-mdeuda').textContent=saldoLabel+fC(Math.abs(saldo));
+  $('k-g26').textContent=fM(g26);
+  $('k-g25').textContent='Global 2025: '+fM(g25);
+  $('k-gyoy').textContent='YoY Global: '+pn(g25>0?(g26-g25)/g25:0);
+  $('k-sh26').textContent=pp(sh26);
+  $('k-sh25').textContent='2025: '+pp(sh25);
+  $('k-shdelta').textContent='Δ share: '+pn(sh26-sh25);
+
+  // GROUP META CARDS
+  $('gm-dig-v').textContent=fM(digV);
+  $('gm-dig-m').textContent=metaDigital>0?fM(metaDigital):'—';
+  $('gm-dig-alc').textContent=metaDigital>0?pp(digAlc):'—';
+  $('gm-dig-alc').style.color=digAlc>=1?'var(--green)':'var(--yellow)';
+  $('gm-dig-bar').style.cssText=`width:${metaDigital>0?Math.min(digAlc*100,100):0}%;background:${digAlc>=1?'var(--green)':'var(--cyan)'};height:100%;border-radius:3px;transition:width .8s`;
+  $('gm-mk-v').textContent=fM(mkV);
+  $('gm-mk-m').textContent=metaMktplace>0?fM(metaMktplace):'—';
+  $('gm-mk-alc').textContent=metaMktplace>0?pp(mkAlc):'—';
+  $('gm-mk-alc').style.color=mkAlc>=1?'var(--green)':'var(--orange)';
+  $('gm-mk-bar').style.cssText=`width:${metaMktplace>0?Math.min(mkAlc*100,100):0}%;background:${mkAlc>=1?'var(--green)':'var(--yellow)'};height:100%;border-radius:3px;transition:width .8s`;
+
+  // CHART
+  if(CM) CM.destroy();
+  CM=new Chart($('chart-m'),{type:'bar',
+    data:{labels:fullData.monthly.map(m=>m.mes),datasets:[
+      {label:'Ecom 2025',data:fullData.monthly.map(m=>m.e25),backgroundColor:fullData.monthly.map(m=>ACTIVE_MONTHS.has('todos')||ACTIVE_MONTHS.has(m.mnum)?'#1E3A5F':'#1E3A5F33'),borderRadius:3},
+      {label:'Ecom 2026',data:fullData.monthly.map(m=>m.e26),backgroundColor:fullData.monthly.map(m=>ACTIVE_MONTHS.has('todos')||ACTIVE_MONTHS.has(m.mnum)?'#00D4FF':'#00D4FF22'),borderRadius:3},
+      {label:'Meta 2026',data:fullData.monthly.map(m=>m.meta),backgroundColor:fullData.monthly.map(m=>ACTIVE_MONTHS.has('todos')||ACTIVE_MONTHS.has(m.mnum)?'#FFD700BB':'#FFD70022'),borderRadius:3},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fM(c.raw)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#7A8FA6',font:{size:11}}},y:{grid:{color:'#1E3A5F55'},ticks:{color:'#7A8FA6',font:{size:10},callback:v=>fM(v)}}}}
+  });
+
+  $('mcards').innerHTML=fullData.monthly.map(m=>{
+    const cr=m.e25>0?(m.e26-m.e25)/m.e25:0,al=m.meta>0?m.e26/m.meta:0;
+    const isAct=ACTIVE_MONTHS.has('todos')||ACTIVE_MONTHS.has(m.mnum);
+    return `<div class="mcard" style="opacity:${isAct?1:.3};border-color:${isAct&&!ACTIVE_MONTHS.has('todos')?'var(--cyan)':'var(--border)'}">
+      <div class="ml">${m.mes}</div><div class="mv">${fM(m.e26)}</div>
+      <div class="mr"><span class="badge ${cr>=0?'bu':'bd'}">${pn(cr)}</span>
+      <span style="font-size:11px;color:${al>=1?'var(--green)':'var(--yellow)'}">Alc: ${pp(al)}</span></div></div>`;
+  }).join('');
+
+  const grps=['Digital','Mktplace'];
+  const pv=grps.map(g=>channels.filter(c=>c.g===g).reduce((a,c)=>a+c.v26,0));
+  if(CP) CP.destroy();
+  CP=new Chart($('chart-pie'),{type:'doughnut',
+    data:{labels:grps,datasets:[{data:pv,backgroundColor:grps.map(g=>GC[g]),borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${fM(c.raw)}`}}}}
+  });
+  $('pie-leg').innerHTML=grps.map((g,i)=>`<div class="pie-li">
+    <div class="pie-lname"><div class="pie-ldot" style="background:${GC[g]}"></div>${g}</div>
+    <div><span class="pie-lv">${fM(pv[i])}</span><span class="pie-lp">${pp(t26>0?pv[i]/t26:0)}</span></div></div>`).join('');
+
+  // Multi-select tabs — store current state for the global listener
+  if(!window._activeFilters) window._activeFilters=new Set(['Todos']);
+  window._chState={channels,v};
+  renderCh(channels,v,window._activeFilters);
+
+  $('sy-row').innerHTML=[
+    {yr:'2025',e:t25,g:g25,s:sh25,bc:'#1E3A5F55',tc:'var(--muted)'},
+    {yr:'2026',e:t26,g:g26,s:sh26,bc:'#00D4FF33',tc:'var(--cyan)'},
+  ].map(x=>`<div class="sy-card" style="border-color:${x.bc}">
+    <div class="sy-yr" style="color:${x.tc}">${x.yr}</div>
+    <div class="sy-l">Ecommerce</div><div class="sy-v">${fM(x.e)}</div>
+    <div class="sy-l">Global Tiendas</div><div class="sy-v">${fM(x.g)}</div>
+    <div class="sy-l" style="margin-bottom:5px">Share</div>
+    <div class="btrack" style="height:22px;border-radius:5px">
+      <div class="bfill" style="width:${x.s*100}%;background:${x.tc==='var(--cyan)'?'var(--cyan)':'#3A5F88'};height:100%;border-radius:5px"></div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:#FFFFFF;margin-top:5px;letter-spacing:-0.5px">${pp(x.s)}</div>
+    </div>`).join('');
+  $('share-note').innerHTML=`<span>Ganancia share: <strong style="color:var(--pink)">+${((sh26-sh25)*100).toFixed(2)} pp</strong></span>
+    <span>Global YoY: <strong style="color:var(--red)">${pn(g25>0?(g26-g25)/g25:0)}</strong></span>`;
+
+  $('mfill').style.width=`${Math.min(alc*100,100)}%`;
+  $('mfill').style.background=ok?'linear-gradient(90deg,#00D4FF,#00FF88)':'linear-gradient(90deg,#00D4FF,#FFD700)';
+  $('mpct').style.color=ok?'var(--green)':'var(--yellow)';
+  $('mpct').textContent=pp(alc);
+  $('mlab-mid').textContent=`Meta: ${fM(meta26)}`;
+  $('mlab-end').textContent=fM(meta26*1.05);
+  $('meta-grid').innerHTML=[
+    {l:'Venta Ecom 2026',    v:fM(t26),        c:'var(--cyan)'},
+    {l:'Meta Acumulada',     v:fM(meta26),     c:'var(--yellow)'},
+    {l:saldo>=0?'A Favor':'Deuda',  v:fC(Math.abs(saldo)), c:t26>=meta26?'var(--green)':'var(--red)'},
+    {l:'Crecimiento vs 2025',v:pn(eg),         c:'var(--pink)'},
+  ].map(i=>`<div class="mi"><div class="mil">${i.l}</div><div class="miv" style="color:${i.c}">${i.v}</div></div>`).join('');
+}
+
+function renderCh(channels,v,activeFilters){
+  const {metaDigital,metaMktplace,meta26}=v;
+  const MELI_NAMES=['Meli Drop','Meli Full'];
+  const AMZ_NAMES=['Amazon Drop','Amazon Full'];
+  const DIG_NAMES=['Web + APP','Afiliados','RMK (TMK)','WA','Ent. en Tienda'];
+  const MKT_NAMES=['Meli Drop','Meli Full','Amazon Drop','Amazon Full','TikTok','Shein'];
+  const hasTodos=activeFilters.has('Todos');
+
+  function matchesCh(name){
+    if(hasTodos) return true;
+    for(const f of activeFilters){
+      if(f==='Digital' && DIG_NAMES.includes(name)) return true;
+      if(f==='Mktplace' && MKT_NAMES.includes(name)) return true;
+      if(f==='MELI' && MELI_NAMES.includes(name)) return true;
+      if(f==='Amazon' && AMZ_NAMES.includes(name)) return true;
+      if(f===name) return true;
+    }
+    return false;
+  }
+
+  // Build display list — consolidate MELI and Amazon if requested as group
+  const doMELI = activeFilters.has('MELI') && !activeFilters.has('Meli Drop') && !activeFilters.has('Meli Full');
+  const doAMZ  = activeFilters.has('Amazon') && !activeFilters.has('Amazon Drop') && !activeFilters.has('Amazon Full');
+
+  let displayChs = [];
+  let meliConsolidated = false;
+  let amzConsolidated  = false;
+
+  channels.forEach(c=>{
+    if(!matchesCh(c.name)) return;
+    if(doMELI && MELI_NAMES.includes(c.name)){
+      if(!meliConsolidated){
+        const meliChs = channels.filter(x=>MELI_NAMES.includes(x.name));
+        const v25sum = meliChs.reduce((a,x)=>a+x.v25,0);
+        const v26sum = meliChs.reduce((a,x)=>a+x.v26,0);
+        displayChs.push({name:'MELI',g:'Mktplace',col:'#FFD700',v25:v25sum,v26:v26sum,consolidated:true});
+        meliConsolidated=true;
+      }
+      return;
+    }
+    if(doAMZ && AMZ_NAMES.includes(c.name)){
+      if(!amzConsolidated){
+        const amzChs = channels.filter(x=>AMZ_NAMES.includes(x.name));
+        const v25sum = amzChs.reduce((a,x)=>a+x.v25,0);
+        const v26sum = amzChs.reduce((a,x)=>a+x.v26,0);
+        displayChs.push({name:'Amazon',g:'Mktplace',col:'#FF8C00',v25:v25sum,v26:v26sum,consolidated:true});
+        amzConsolidated=true;
+      }
+      return;
+    }
+    displayChs.push(c);
+  });
+
+  const total26=displayChs.reduce((a,c)=>a+c.v26,0);
+
+  $('ch-rows').innerHTML=displayChs.map(c=>{
+    const gr=c.v25>0?(c.v26-c.v25)/c.v25:null;
+    const crBadge=gr!==null?`<span class="badge ${gr>=0?'bu':'bd'}">${pn(gr)}</span>`:`<span class="badge bn">NUEVO</span>`;
+    const part=total26>0?c.v26/total26:0;
+    const partBar=`<div style="display:flex;align-items:center;gap:5px;justify-content:flex-end">
+      <div style="width:42px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:${(part*100).toFixed(1)}%;height:100%;background:${c.col};border-radius:3px"></div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:${c.col}">${(part*100).toFixed(1)}%</span>
+    </div>`;
+    return `<div class="ch-row">
+      <div class="ch-nm-wrap"><div class="ch-bar" style="background:${c.col}"></div>
+        <div><div class="ch-nm">${c.name}</div><div class="ch-grp-tag" style="color:${GC[c.g]}">${c.g}</div></div></div>
+      <div class="num">${c.v25>0?fM(c.v25):'—'}</div>
+      <div class="num hi">${fM(c.v26)}</div>
+      <div style="text-align:right">${partBar}</div>
+      <div style="text-align:right">${crBadge}</div></div>`;
+  }).join('');
+
+  const s25=displayChs.reduce((a,c)=>a+c.v25,0),s26=displayChs.reduce((a,c)=>a+c.v26,0);
+  // Determine total meta label
+  let totLabel='TOTAL ECOM';
+  let totMeta=meta26;
+  if(!hasTodos && activeFilters.size===1){
+    const f=[...activeFilters][0];
+    if(f==='Digital'){totLabel='DIGITAL';totMeta=metaDigital;}
+    else if(f==='Mktplace'){totLabel='MKTPLACE';totMeta=metaMktplace;}
+    else totLabel=f.toUpperCase();
+  } else if(!hasTodos){
+    totLabel='SELECCIÓN';totMeta=0;
+  }
+  const sg=s25>0?(s26-s25)/s25:0;
+  // participation of this selection vs full ecom total
+  const fullT26=channels.reduce((a,c)=>a+c.v26,0);
+  const selPart=fullT26>0?s26/fullT26:1;
+  $('ch-tot').innerHTML=`
+    <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--cyan);letter-spacing:1px;text-transform:uppercase">${totLabel}</div>
+    <div class="num" style="text-align:right">${fM(s25)}</div>
+    <div class="num hi" style="text-align:right;color:var(--cyan);font-size:13px">${fM(s26)}</div>
+    <div style="text-align:right">
+      <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--cyan)">${(selPart*100).toFixed(1)}%</span>
+    </div>
+    <div style="text-align:right"><span class="badge ${sg>=0?'bu':'bd'}">${pn(sg)}</span></div>`;
+}
+
+function downloadHTML(){
+  const scriptText=document.getElementById('main-script').textContent;
+  const full=document.documentElement.outerHTML;
+  const before=full.split('<script id="main-script">')[0];
+  const src='<!DOCTYPE html>\n'+before+'<script id="main-script">'+scriptText+'<\/script>\n<\/body>\n<\/html>';
+  const updated=src.replace(/const EMBEDDED = \{[\s\S]*?\};/,`const EMBEDDED = ${JSON.stringify(CURRENT)};`);
+  const blob=new Blob([updated],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='dashboard.html'; a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+const EMBEDDED = {"lastDate":"10 de marzo de 2026","channels":[{"name":"Web + APP","c25":"Web + APP 2025","c26":"Web + APP 2026","g":"Digital","col":"#00D4FF","v25":154170280,"v26":187280896},{"name":"Afiliados","c25":"Afiliados 2025","c26":"Afiliados 2026","g":"Digital","col":"#0099CC","v25":1531387.9310344823,"v26":1777538},{"name":"RMK (TMK)","c25":"TMK 2025","c26":"TMK 2026","g":"Digital","col":"#336699","v25":3428543,"v26":1791691},{"name":"WA","c25":"WA 2025","c26":"WA 2026","g":"Digital","col":"#1A4477","v25":275470,"v26":178943},{"name":"Ent. en Tienda","c25":"Ent. en Tienda 2025","c26":"Ent. en Tienda 2026","g":"Digital","col":"#00AACC","v25":4216658,"v26":4808657},{"name":"Meli Drop","c25":"Meli Drop 2025","c26":"Meli Drop 2026","g":"Mktplace","col":"#FFD700","v25":24943319,"v26":30850399},{"name":"Meli Full","c25":"Meli Full 2025","c26":"Meli Full 2026","g":"Mktplace","col":"#FFA500","v25":5290302,"v26":5542437},{"name":"Amazon Drop","c25":"Amazon Drop 2025","c26":"Amazon Drop 2026","g":"Mktplace","col":"#FF8C00","v25":2522429,"v26":1821995},{"name":"Amazon Full","c25":"Amazon Full 2025","c26":"Amazon Full 2026","g":"Mktplace","col":"#CC6600","v25":555772,"v26":405303},{"name":"TikTok","c25":"TikTok 2025","c26":"TikTo 2026","g":"Mktplace","col":"#FF0F7B","v25":0,"v26":0},{"name":"Shein","c25":"Shein 2025","c26":"Shein 2026","g":"Mktplace","col":"#CC0055","v25":0,"v26":15328}],"monthly":[{"mes":"Enero","mnum":1,"e25":87931282.55172415,"e26":99633178,"g25":1026769179,"g26":972187967,"meta":110036760.99999999,"metaDigital":87736760.99999999,"metaMktplace":22300000,"days":31,"channels":{"Web + APP":{"v25":66190352,"v26":76507428},"Afiliados":{"v25":755171.5517241376,"v26":859456},"RMK (TMK)":{"v25":1473970,"v26":824753},"WA":{"v25":111961,"v26":76679},"Ent. en Tienda":{"v25":1793328,"v26":1755083},"Meli Drop":{"v25":12929492,"v26":15141562},"Meli Full":{"v25":2757466,"v26":3117450},"Amazon Drop":{"v25":1575670,"v26":1122243},"Amazon Full":{"v25":343872,"v26":219052},"TikTok":{"v25":0,"v26":0},"Shein":{"v25":0,"v26":9472}}},{"mes":"Febrero","mnum":2,"e25":77474940.41379312,"e26":93940155,"g25":975261647,"g26":946048411,"meta":93688658.00000001,"metaDigital":79688658,"metaMktplace":13999999.999999996,"days":28,"channels":{"Web + APP":{"v25":62956644,"v26":76555335},"Afiliados":{"v25":581772.4137931032,"v26":687494},"RMK (TMK)":{"v25":1457513,"v26":660652},"WA":{"v25":111318,"v26":72850},"Ent. en Tienda":{"v25":1712407,"v26":2159419},"Meli Drop":{"v25":8154069,"v26":11257443},"Meli Full":{"v25":1581609,"v26":1820069},"Amazon Drop":{"v25":774129,"v26":593910},"Amazon Full":{"v25":145479,"v26":127902},"TikTok":{"v25":0,"v26":0},"Shein":{"v25":0,"v26":5081}}},{"mes":"Marzo*","mnum":3,"e25":31527937.96551724,"e26":40899854,"g25":375147154,"g26":399224684,"meta":39522158.88931422,"metaDigital":32787181.306771662,"metaMktplace":6734977.582542556,"days":10,"channels":{"Web + APP":{"v25":25023284,"v26":34218133},"Afiliados":{"v25":194443.96551724133,"v26":230588},"RMK (TMK)":{"v25":497060,"v26":306286},"WA":{"v25":52191,"v26":29414},"Ent. en Tienda":{"v25":710923,"v26":894155},"Meli Drop":{"v25":3859758,"v26":4451394},"Meli Full":{"v25":951227,"v26":604918},"Amazon Drop":{"v25":172630,"v26":105842},"Amazon Full":{"v25":66421,"v26":58349},"TikTok":{"v25":0,"v26":0},"Shein":{"v25":0,"v26":775}}}],"g25":2377177980,"g26":2317461062,"meta26":243247577.88931423,"metaDigital":200212600.30677164,"metaMktplace":43034977.58254255,"t25":196934160.93103448,"t26":234473187};
+
+let CURRENT = EMBEDDED;
+window.addEventListener('DOMContentLoaded', () => {
+  render(CURRENT);
+  // Single persistent tab listener — always reads latest chState
+  document.getElementById('tabs').addEventListener('click',function(e){
+    const btn=e.target.closest('.tab');
+    if(!btn||!btn.dataset.g) return;
+    const g=btn.dataset.g;
+    const af=window._activeFilters||(window._activeFilters=new Set(['Todos']));
+    if(g==='Todos'){ af.clear(); af.add('Todos'); }
+    else {
+      af.delete('Todos');
+      if(af.has(g)) af.delete(g); else af.add(g);
+      if(af.size===0) af.add('Todos');
+    }
+    document.querySelectorAll('#tabs .tab').forEach(b=>b.classList.toggle('on',af.has(b.dataset.g)));
+    if(window._chState) renderCh(window._chState.channels, window._chState.v, af);
+  });
+});
+
+function load(file){
+  if(!file) return;
+  $('btn-label').innerHTML='<span class="spinner-sm"></span>';
+  $('upload-status').textContent='';
+  const fr=new FileReader();
+  fr.onload=e=>{
+    try{
+      const data=parse(e.target.result);
+      CURRENT=data; render(data);
+      $('upload-status').style.color='var(--green)';
+      $('upload-status').textContent='✓ Actualizado';
+      setTimeout(()=>$('upload-status').textContent='',4000);
+    }catch(err){
+      $('upload-status').style.color='var(--red)';
+      $('upload-status').textContent='⚠ '+err.message;
+    }finally{
+      $('btn-label').textContent='Actualizar';
+      $('file-input').value='';
+    }
+  };
+  fr.readAsArrayBuffer(file);
+}
+
+$('file-input').onchange=e=>load(e.target.files[0]);
+document.addEventListener('dragover',e=>e.preventDefault());
+document.addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f) load(f);});
+</script>
+</body>
+</html>
