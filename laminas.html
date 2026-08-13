@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Láminas Canales 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;min-height:100vh}
+.hdr{display:flex;justify-content:space-between;align-items:center;padding:9px 18px;
+  background:linear-gradient(135deg,#1a237e,#283593);color:#fff;flex-wrap:wrap;gap:7px}
+.hdr h1{font-size:15px;font-weight:800}
+.hdr .ey{font-size:8.5px;letter-spacing:3px;text-transform:uppercase;color:#ffe082;font-weight:700}
+.hdr-right{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:15px;
+  font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid;font-family:inherit;transition:all .18s;white-space:nowrap}
+.btn-ul{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.35);color:#fff;position:relative}
+.btn-ul input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.btn-sl{border-color:rgba(255,255,255,.35);color:#fff;background:rgba(255,255,255,.12)}
+.btn-sl.on{background:#fff;color:#1a237e;border-color:#fff}
+.btn-dl{background:#f57f17;border-color:#e65100;color:#fff}
+.btn-cp{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.35);color:#fff}
+#ust{font-size:10px;color:#ffe082}
+.slide{display:none;padding:14px 16px;max-width:1500px;margin:0 auto}.slide.on{display:block}
+/* MONTH BAR */
+.mbar{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:10px;
+  background:#fff;border-radius:8px;padding:7px 11px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.mbar-lbl{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#546e7a;margin-right:3px}
+.mf{padding:3px 10px;border-radius:12px;font-size:10.5px;font-weight:600;cursor:pointer;
+  border:1.5px solid #e0e0e0;background:transparent;color:#424242;font-family:inherit}
+.mf.on{border-color:#1a237e;color:#1a237e;background:#e8eaf6}
+/* SUB TABS (Mes / YTD) */
+.stabs{display:flex;gap:4px;margin-bottom:8px}
+.stab{padding:4px 16px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer;
+  border:1.5px solid #c5cae9;background:transparent;color:#5c6bc0;font-family:inherit}
+.stab.on{background:#1a237e;color:#fff;border-color:#1a237e}
+/* TABLE STYLE (Image 2 format) */
+.tw{overflow-x:auto;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1);margin-bottom:8px}
+.ttbl{width:100%;border-collapse:collapse;font-size:10.5px;background:#fff;min-width:900px}
+.ttbl th,.ttbl td{white-space:nowrap;padding:4px 9px}
+.ttbl thead tr.th0 th{background:#1a237e;color:#fff;text-align:center;font-size:11px;font-weight:700;letter-spacing:.5px;padding:7px 9px}
+.ttbl thead tr.th0 th.canal-hd{text-align:left;background:#1a237e;min-width:120px;padding:7px 10px}
+.ttbl thead tr.th0 th.s2{background:#283593}
+.ttbl thead tr.th0 th.s3{background:#37474f}
+.ttbl thead tr.th1 th{background:#283593;color:#c5cae9;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;text-align:center;padding:5px 8px}
+.ttbl thead tr.th1 th:first-child{text-align:center;color:#e8eaf6;letter-spacing:.5px;font-weight:700;padding:5px 8px}
+.ttbl tbody td{border-bottom:1px solid rgba(0,0,0,.05)}
+.ttbl tbody tr:nth-child(even):not(.tot):not(.ps){background:#f8f9ff}
+.ttbl tbody tr.tot{background:#dde4f5!important;border-top:2px solid #9fa8da}
+.ttbl tbody tr.ps{background:#f5f5f5!important;border-top:1px dashed #e0e0e0}
+.ttbl tbody tr.sub1{background:#eef1ff!important;border-left:3px solid #5c6bc0}
+.ttbl tbody tr.sub2{background:#f3f5ff!important;border-left:5px solid #9fa8da}
+td.cn{font-weight:600;font-size:11px;color:#212121;border-right:1px solid #e0e0e0;text-align:left;padding:4px 10px}
+td.cn.tot{color:#1a237e;font-size:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:800}
+td.cn.sub1{padding-left:20px;color:#283593;font-size:10.5px}
+td.cn.sub2{padding-left:34px;color:#546e7a;font-size:10px;font-weight:500}
+td.cn .tg{cursor:pointer;color:#5c6bc0;font-size:9px;margin-right:4px;user-select:none;display:inline-block;width:12px;text-align:center}
+td.nv{text-align:center;font-family:'Courier New',monospace;font-size:10.5px;color:#212121;padding:4px 8px}
+td.nv.bl{color:#0d47a1;font-weight:700}
+td.nv.or{color:#e65100;font-weight:600}
+td.nv.gr{color:#2e7d32;font-weight:600}
+td.nv.mu{color:#546e7a}
+td.pct{text-align:center;font-family:'Courier New',monospace;font-size:10px;font-weight:700;padding:4px 8px}
+td.pct.pos{background:#e8f5e9;color:#1b5e20}
+td.pct.neg{background:#ffebee;color:#b71c1c}
+td.pct.na{color:#bdbdbd;text-align:center;padding:4px 8px}
+td.sep{border-right:3px solid #c5cae9}
+.ft{font-size:9px;color:#546e7a;margin-top:5px}
+/* DAILY */
+.day-top{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.day-left{flex:1;min-width:280px;background:#fff;border-radius:9px;padding:12px;box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.day-right{flex:2;min-width:300px;background:#fff;border-radius:9px;padding:12px;box-shadow:0 1px 5px rgba(0,0,0,.07);min-height:240px}
+.day-right canvas{width:100%!important}
+.dsel-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#546e7a;font-weight:700;margin-bottom:6px}
+.dsel-grid{display:flex;flex-wrap:wrap;gap:4px;max-height:200px;overflow-y:auto}
+.dday{padding:3px 8px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;
+  border:1px solid #e0e0e0;background:transparent;color:#424242;font-family:inherit}
+.dday.on{background:#1a237e;color:#fff;border-color:#1a237e}
+.dday:hover:not(.on){border-color:#7986cb;color:#283593}
+.dsel-btns{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap}
+.dqbtn{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;
+  border:1px solid #c5cae9;background:#e8eaf6;color:#1a237e;font-family:inherit}
+.dqbtn:hover{background:#c5cae9}
+.day-info{font-size:11px;color:#546e7a;margin-bottom:8px}
+.day-info strong{color:#1a237e}
+/* Charts (slide 2) */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px}
+@media(max-width:680px){.cgrid{grid-template-columns:1fr}}
+.cc{background:#fff;border-radius:9px;padding:11px 13px;box-shadow:0 2px 6px rgba(0,0,0,.07);border-top:3px solid}
+.cc .ey3{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#546e7a;margin-bottom:2px}
+.cc .ct{font-size:11px;font-weight:700;margin-bottom:8px}
+.cfw{background:#fff;border-radius:9px;padding:11px 13px;
+  box-shadow:0 2px 6px rgba(0,0,0,.07);border-top:3px solid #37474f;margin-bottom:11px}
+.kpi-sec{margin-top:11px}
+.kpi-stitle{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:#546e7a;font-weight:700;margin-bottom:6px}
+.krow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.kchip{background:#fff;border-radius:8px;padding:10px 13px;box-shadow:0 1px 4px rgba(0,0,0,.08);min-width:140px;flex:1}
+.kchip .ktitle{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#546e7a;margin-bottom:5px;font-weight:700}
+.kchip .krow2{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;gap:5px}
+.kchip .klbl{font-size:9px;color:#424242;flex-shrink:0}
+.kchip .kval{font-size:13px;font-weight:800;font-family:'Courier New',monospace}
+.kchip .kval.sm{font-size:11px;font-weight:600}
+.kchip .kdiv{height:1px;background:#f0f0f0;margin:4px 0}
+.kchip .kb{font-size:9.5px;font-weight:700;font-family:'Courier New',monospace;margin-left:4px}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div><div class="ey">Ecommerce · Price Shoes</div><h1 id="hdr-ttl">Láminas · Agosto 2026</h1></div>
+  <div class="hdr-right">
+    <button class="btn btn-sl on" id="bs1" onclick="showSlide(1)">📋 Tabla</button>
+    <button class="btn btn-sl" id="bs2" onclick="showSlide(2)">📊 Gráficas</button>
+    <button class="btn btn-sl" id="bs3" onclick="showSlide(3)">📅 Venta Diaria</button>
+    <label class="btn btn-ul"><input type="file" id="fi" accept=".xlsx,.xls">⬆ Actualizar</label>
+    <button class="btn btn-cp" onclick="copyImg()">🖼 Imagen</button>
+    <button class="btn btn-cp" onclick="copyTbl()">📋 Copiar tabla</button>
+    <button class="btn btn-dl" onclick="download()">⬇ HTML</button>
+    <span id="ust">✓</span>
+  </div>
+</div>
+
+<!-- SLIDE 1: TABLE -->
+<div class="slide on" id="sl1">
+  <div class="mbar" id="mbar" style="display: flex;">
+    <span class="mbar-lbl">Período</span>
+    <div id="mbtn" style="display:flex;gap:4px;flex-wrap:wrap"><button class="mf " onclick="selectMonth(0)">Enero</button><button class="mf " onclick="selectMonth(1)">Febrero</button><button class="mf " onclick="selectMonth(2)">Marzo</button><button class="mf " onclick="selectMonth(3)">Abril</button><button class="mf " onclick="selectMonth(4)">Mayo</button><button class="mf " onclick="selectMonth(5)">Junio</button><button class="mf " onclick="selectMonth(6)">Julio</button><button class="mf on" onclick="selectMonth(7)">Agosto *</button></div>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
+    <span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#546e7a;font-weight:700">Comparativo vs 2025:</span>
+    <button class="stab on" id="md-btn" onclick="setCmp('md')">Mismo Día</button>
+    <button class="stab" id="mf-btn" onclick="setCmp('mf')">Misma Fecha</button>
+  </div>
+  <div class="tw" id="twrap"><div style="margin-bottom:4px;display:flex;justify-content:flex-end;gap:6px;align-items:center">
+    <span style="font-size:9px;color:#546e7a">AGOSTO MTD + Proyección</span>
+    <button onclick="copyTblImg('tbl-mes')" style="padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid #c5cae9;background:#e8eaf6;color:#1a237e;font-family:inherit">📷 Copiar</button>
+  </div><div id="tbl-mes" style="background:#fff"><table class="ttbl"><colgroup><col style="width:130px"><col style="width:88px"><col style="width:88px"><col style="width:88px"><col style="width:75px"><col style="width:75px"><col style="width:88px"><col style="width:88px"><col style="width:88px"><col style="width:75px"><col style="width:75px"></colgroup><thead>
+<tr class="th0">
+  <th class="canal-hd" rowspan="2">Canal</th>
+  <th colspan="5">AGOSTO MTD</th>
+  <th colspan="5" class="s2">AGOSTO PROYECCIÓN</th>
+</tr>
+<tr class="th1">
+  <th>2025</th><th>META</th><th>REAL</th><th>VS 25</th><th class="sep">VS META</th>
+  <th>2025 FULL</th><th>META AGOSTO</th><th>PROY</th><th>VS 25</th><th class="sep">VS META</th>
+</tr></thead><tbody><tr class="">
+<td class="cn ">Web/APP</td>
+<td class="nv mu">$34.9M</td><td class="nv or">$46.0M</td><td class="nv bl">$40.5M</td>
+<td class="pct pos ">+16.0%</td><td class="pct neg sep">-12.0%</td><td class="nv mu">$34.9M</td><td class="nv or">$142.9M</td><td class="nv bl">$125.8M</td>
+<td class="pct pos ">+260.0%</td><td class="pct neg sep">-12.0%</td></tr><tr class="">
+<td class="cn ">Afiliación</td>
+<td class="nv mu">$435.2K</td><td class="nv or">—</td><td class="nv bl">$564.8K</td>
+<td class="pct pos ">+29.8%</td><td class="pct na">—</td><td class="nv mu">$435.2K</td><td class="nv or">—</td><td class="nv bl">$564.8K</td>
+<td class="pct pos ">+29.8%</td><td class="pct na">—</td></tr><tr class="">
+<td class="cn "><span class="tg" onclick="tExp('mkp')">▶</span>MKP</td>
+<td class="nv mu">$9.6M</td><td class="nv or">$12.9M</td><td class="nv bl">$6.8M</td>
+<td class="pct neg ">-29.4%</td><td class="pct neg sep">-47.3%</td><td class="nv mu">$9.6M</td><td class="nv or">$41.5M</td><td class="nv bl">$21.9M</td>
+<td class="pct pos ">+127.4%</td><td class="pct neg sep">-47.3%</td></tr><tr class="">
+<td class="cn ">TMK/WA</td>
+<td class="nv mu">$482.1K</td><td class="nv or">$513.2K</td><td class="nv bl">$351.6K</td>
+<td class="pct neg ">-27.1%</td><td class="pct neg sep">-31.5%</td><td class="nv mu">$482.1K</td><td class="nv or">$1.6M</td><td class="nv bl">$1.1M</td>
+<td class="pct pos ">+126.3%</td><td class="pct neg sep">-31.5%</td></tr><tr class="">
+<td class="cn ">Entrega Tda</td>
+<td class="nv mu">$1.2M</td><td class="nv or">$2.0M</td><td class="nv bl">$988.8K</td>
+<td class="pct neg ">-16.7%</td><td class="pct neg sep">-49.5%</td><td class="nv mu">$1.2M</td><td class="nv or">$6.1M</td><td class="nv bl">$3.1M</td>
+<td class="pct pos ">+158.5%</td><td class="pct neg sep">-49.5%</td></tr><tr class="tot">
+<td class="cn tot">Total</td>
+<td class="nv mu">$46.7M</td><td class="nv or">$61.4M</td><td class="nv bl">$49.2M</td>
+<td class="pct pos ">+5.5%</td><td class="pct neg sep">-19.8%</td><td class="nv mu">$46.7M</td><td class="nv or">$192.0M</td><td class="nv bl">$154.0M</td>
+<td class="pct pos ">+230.0%</td><td class="pct neg sep">-19.8%</td></tr><tr class="ps">
+<td class="cn mu" style="font-size:10px">Total PS</td>
+<td class="nv mu">$478.0M</td><td class="nv">—</td><td class="nv bl">$469.9M</td>
+<td class="pct neg ">-1.7%</td><td class="pct na">—</td>
+<td colspan="5"></td>
+</tr>
+<tr class="ps">
+<td class="cn mu" style="font-size:10px">% Share PS</td>
+<td class="nv mu">9.2%</td><td class="nv">—</td>
+<td class="nv bl">10.5%</td>
+<td class="pct pos ">+1.2%</td><td class="pct na">—</td>
+<td colspan="5"></td>
+</tr></tbody></table></div><div style="margin-bottom:4px;display:flex;justify-content:flex-end;gap:6px;align-items:center">
+    <span style="font-size:9px;color:#546e7a">YTD + Proyección FY</span>
+    <button onclick="copyTblImg('tbl-ytd')" style="padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid #c5cae9;background:#e8eaf6;color:#1a237e;font-family:inherit">📷 Copiar</button>
+  </div><div id="tbl-ytd" style="background:#fff"><table class="ttbl" style="margin-top:10px"><colgroup><col style="width:130px"><col style="width:88px"><col style="width:88px"><col style="width:88px"><col style="width:75px"><col style="width:75px"><col style="width:88px"><col style="width:88px"><col style="width:88px"><col style="width:75px"><col style="width:75px"></colgroup><thead>
+<tr class="th0">
+  <th class="canal-hd" rowspan="2">Canal</th>
+  <th colspan="5">YTD 2026</th>
+  <th colspan="5" class="s2">PROYECCIÓN FY 2026</th>
+</tr>
+<tr class="th1">
+  <th>YTD 25</th><th>META YTD</th><th>REAL YTD</th><th>VS 25</th><th class="sep">VS META</th>
+  <th>FY 2025</th><th>META FY</th><th>PROY FY</th><th>VS 25</th><th>VS META</th>
+</tr></thead><tbody><tr class="">
+<td class="cn ">Web/APP</td>
+<td class="nv mu">$547.5M</td><td class="nv or">$716.5M</td><td class="nv bl">$651.5M</td>
+<td class="pct pos ">+19.0%</td><td class="pct neg sep">-9.1%</td>
+<td class="nv mu">$547.5M</td><td class="nv or">$1.4B</td><td class="nv bl">$1.3B</td>
+<td class="pct pos ">+139.3%</td><td class="pct neg ">-3.4%</td>
+</tr><tr class="">
+<td class="cn ">Afiliación</td>
+<td class="nv mu">$6.0M</td><td class="nv or">—</td><td class="nv bl">$6.4M</td>
+<td class="pct pos ">+6.6%</td><td class="pct na">—</td>
+<td class="nv mu">$6.0M</td><td class="nv or">—</td><td class="nv bl">—</td>
+<td class="pct na">—</td><td class="pct na">—</td>
+</tr><tr class="">
+<td class="cn "><span class="tg" onclick="tExp('mkp')">▶</span>MKP</td>
+<td class="nv mu">$143.8M</td><td class="nv or">$186.3M</td><td class="nv bl">$128.7M</td>
+<td class="pct neg ">-10.5%</td><td class="pct neg sep">-30.9%</td>
+<td class="nv mu">$143.8M</td><td class="nv or">$377.7M</td><td class="nv bl">$340.8M</td>
+<td class="pct pos ">+137.0%</td><td class="pct neg ">-9.8%</td>
+</tr><tr class="">
+<td class="cn ">TMK/WA</td>
+<td class="nv mu">$10.5M</td><td class="nv or">$7.4M</td><td class="nv bl">$5.9M</td>
+<td class="pct neg ">-43.7%</td><td class="pct neg sep">-19.6%</td>
+<td class="nv mu">$10.5M</td><td class="nv or">$14.2M</td><td class="nv bl">$12.8M</td>
+<td class="pct pos ">+21.1%</td><td class="pct neg ">-9.8%</td>
+</tr><tr class="">
+<td class="cn ">Entrega Tda</td>
+<td class="nv mu">$18.0M</td><td class="nv or">$22.5M</td><td class="nv bl">$17.1M</td>
+<td class="pct neg ">-4.7%</td><td class="pct neg sep">-23.7%</td>
+<td class="nv mu">$18.0M</td><td class="nv or">$46.4M</td><td class="nv bl">$41.1M</td>
+<td class="pct pos ">+128.2%</td><td class="pct neg ">-11.5%</td>
+</tr><tr class="tot">
+<td class="cn tot">Total</td>
+<td class="nv mu">$725.8M</td><td class="nv or">$932.7M</td><td class="nv bl">$809.7M</td>
+<td class="pct pos ">+11.6%</td><td class="pct neg sep">-13.2%</td>
+<td class="nv mu">$725.8M</td><td class="nv or">$1.9B</td><td class="nv bl">$1.7B</td>
+<td class="pct pos ">+136.0%</td><td class="pct neg ">-8.0%</td>
+</tr><tr class="ps">
+<td class="cn mu" style="font-size:10px">Total PS</td>
+<td class="nv mu">$8.3B</td><td class="nv">—</td><td class="nv bl">$8.1B</td>
+<td class="pct neg ">-2.4%</td><td class="pct na sep">—</td>
+<td colspan="5"></td>
+</tr>
+<tr class="ps">
+<td class="cn mu" style="font-size:10px">% Share PS</td>
+<td class="nv mu">8.7%</td><td class="nv">—</td>
+<td class="nv bl">10.0%</td>
+<td class="pct pos ">+1.3%</td><td class="pct na sep">—</td>
+<td colspan="5"></td>
+</tr></tbody></table></div></div>
+  <div class="ft" id="ft1">Fuente: Reporte BI · MDMF_Global_26vs25 · martes, 11 de agosto de 2026</div>
+</div>
+
+<!-- SLIDE 2: CHARTS -->
+<div class="slide" id="sl2">
+  <div class="cgrid">
+    <div class="cc" style="border-color:#1a237e">
+      <div class="ey3">Mes en Curso MTD</div>
+      <div class="ct" id="ctjul" style="color:#1a237e">Agosto MTD — Real vs 2025 vs Meta</div>
+      <div style="height:185px"><canvas id="cjul" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+    </div>
+    <div class="cc" style="border-color:#1565c0">
+      <div class="ey3">YTD 2026</div>
+      <div class="ct" style="color:#1565c0">Real vs 2025 vs Meta</div>
+      <div style="height:185px"><canvas id="cytd" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+    </div>
+  </div>
+  <div class="cfw">
+    <div class="ey3">Proyección FY 2026</div>
+    <div class="ct" style="color:#37474f">FY Proyectado vs 2025 vs Meta</div>
+    <div style="height:165px"><canvas id="cfy" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+  </div>
+  <div id="kpis">
+<div class="kpi-sec"><div class="kpi-stitle">Agosto MTD</div><div class="krow">
+<div class="kchip"><div class="ktitle">Real Agosto 2026</div><div class="krow2"><span class="klbl">Real 2026</span><span class="kval" style="color:#1a237e">$49.2M</span></div><div class="kdiv"></div><div class="krow2"><span class="klbl">Real 2025</span><span class="kval sm" style="color:#546e7a">$44.7M</span></div><div class="krow2"><span class="klbl">Var YoY</span><span class="kval sm" style="color:#212121"></span><span class="kb" style="color:#1b5e20">+10.1%</span></div></div>
+<div class="kchip"><div class="ktitle">Meta MTD</div><div class="krow2"><span class="klbl">Meta</span><span class="kval" style="color:#e65100">$61.4M</span></div><div class="kdiv"></div><div class="krow2"><span class="klbl">Real vs Meta</span><span class="kval sm" style="color:#212121"></span><span class="kb" style="color:#b71c1c">-19.8%</span></div></div>
+</div></div>
+<div class="kpi-sec"><div class="kpi-stitle">Acumulado del Año</div><div class="krow">
+<div class="kchip"><div class="ktitle">YTD vs 2025</div><div class="krow2"><span class="klbl">YTD 2026</span><span class="kval" style="color:#1565c0">$809.7M</span></div><div class="kdiv"></div><div class="krow2"><span class="klbl">YTD 2025</span><span class="kval sm" style="color:#546e7a">$718.7M</span></div><div class="krow2"><span class="klbl">Var YoY</span><span class="kval sm" style="color:#212121"></span><span class="kb" style="color:#1b5e20">+12.7%</span></div></div>
+<div class="kchip"><div class="ktitle">YTD vs Meta</div><div class="krow2"><span class="klbl">YTD 2026</span><span class="kval" style="color:#1565c0">$809.7M</span></div><div class="kdiv"></div><div class="krow2"><span class="klbl">Meta YTD</span><span class="kval sm" style="color:#e65100">$932.7M</span></div><div class="krow2"><span class="klbl">Cumpl.</span><span class="kval sm" style="color:#212121"></span><span class="kb" style="color:#b71c1c">-13.2%</span></div></div>
+<div class="kchip"><div class="ktitle">Proyección FY</div><div class="krow2"><span class="klbl">Proy FY</span><span class="kval" style="color:#37474f">$1.7B</span></div><div class="kdiv"></div><div class="krow2"><span class="klbl">Meta FY</span><span class="kval sm" style="color:#e65100">$1.9B</span><span class="kb" style="color:#b71c1c">-8.0%</span></div><div class="krow2"><span class="klbl">FY 2025</span><span class="kval sm" style="color:#546e7a">$1.4B</span><span class="kb" style="color:#1b5e20">+20.2%</span></div></div>
+</div></div></div>
+  <div class="ft" id="ft2">Fuente: Reporte BI · MDMF_Global_26vs25 · martes, 11 de agosto de 2026</div>
+</div>
+
+<!-- SLIDE 3: DAILY -->
+<div class="slide" id="sl3">
+  <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
+    <span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#546e7a;font-weight:700">Comparativo vs 2025:</span>
+    <button class="stab on" id="md-btn3" onclick="setCmp('md')">Mismo Día</button>
+    <button class="stab" id="mf-btn3" onclick="setCmp('mf')">Misma Fecha</button>
+  </div>
+  <div class="day-top">
+    <!-- Date selector -->
+    <div class="day-left">
+      <div class="dsel-lbl">Seleccionar Días</div>
+      <div class="dsel-btns">
+        <button class="dqbtn" onclick="selQuick('yesterday')">Ayer</button>
+        <button class="dqbtn" onclick="selQuick('week')">Última semana</button>
+        <button class="dqbtn" onclick="selQuick('month')">Este mes</button>
+      </div>
+      <div class="dsel-grid" id="dsel-grid"><button class="dday " data-k="2026-01-01" onclick="toggleDay('2026-01-01')">01-ene</button><button class="dday " data-k="2026-01-02" onclick="toggleDay('2026-01-02')">02-ene</button><button class="dday " data-k="2026-01-03" onclick="toggleDay('2026-01-03')">03-ene</button><button class="dday " data-k="2026-01-04" onclick="toggleDay('2026-01-04')">04-ene</button><button class="dday " data-k="2026-01-05" onclick="toggleDay('2026-01-05')">05-ene</button><button class="dday " data-k="2026-01-06" onclick="toggleDay('2026-01-06')">06-ene</button><button class="dday " data-k="2026-01-07" onclick="toggleDay('2026-01-07')">07-ene</button><button class="dday " data-k="2026-01-08" onclick="toggleDay('2026-01-08')">08-ene</button><button class="dday " data-k="2026-01-09" onclick="toggleDay('2026-01-09')">09-ene</button><button class="dday " data-k="2026-01-10" onclick="toggleDay('2026-01-10')">10-ene</button><button class="dday " data-k="2026-01-11" onclick="toggleDay('2026-01-11')">11-ene</button><button class="dday " data-k="2026-01-12" onclick="toggleDay('2026-01-12')">12-ene</button><button class="dday " data-k="2026-01-13" onclick="toggleDay('2026-01-13')">13-ene</button><button class="dday " data-k="2026-01-14" onclick="toggleDay('2026-01-14')">14-ene</button><button class="dday " data-k="2026-01-15" onclick="toggleDay('2026-01-15')">15-ene</button><button class="dday " data-k="2026-01-16" onclick="toggleDay('2026-01-16')">16-ene</button><button class="dday " data-k="2026-01-17" onclick="toggleDay('2026-01-17')">17-ene</button><button class="dday " data-k="2026-01-18" onclick="toggleDay('2026-01-18')">18-ene</button><button class="dday " data-k="2026-01-19" onclick="toggleDay('2026-01-19')">19-ene</button><button class="dday " data-k="2026-01-20" onclick="toggleDay('2026-01-20')">20-ene</button><button class="dday " data-k="2026-01-21" onclick="toggleDay('2026-01-21')">21-ene</button><button class="dday " data-k="2026-01-22" onclick="toggleDay('2026-01-22')">22-ene</button><button class="dday " data-k="2026-01-23" onclick="toggleDay('2026-01-23')">23-ene</button><button class="dday " data-k="2026-01-24" onclick="toggleDay('2026-01-24')">24-ene</button><button class="dday " data-k="2026-01-25" onclick="toggleDay('2026-01-25')">25-ene</button><button class="dday " data-k="2026-01-26" onclick="toggleDay('2026-01-26')">26-ene</button><button class="dday " data-k="2026-01-27" onclick="toggleDay('2026-01-27')">27-ene</button><button class="dday " data-k="2026-01-28" onclick="toggleDay('2026-01-28')">28-ene</button><button class="dday " data-k="2026-01-29" onclick="toggleDay('2026-01-29')">29-ene</button><button class="dday " data-k="2026-01-30" onclick="toggleDay('2026-01-30')">30-ene</button><button class="dday " data-k="2026-01-31" onclick="toggleDay('2026-01-31')">31-ene</button><button class="dday " data-k="2026-02-01" onclick="toggleDay('2026-02-01')">01-feb</button><button class="dday " data-k="2026-02-02" onclick="toggleDay('2026-02-02')">02-feb</button><button class="dday " data-k="2026-02-03" onclick="toggleDay('2026-02-03')">03-feb</button><button class="dday " data-k="2026-02-04" onclick="toggleDay('2026-02-04')">04-feb</button><button class="dday " data-k="2026-02-05" onclick="toggleDay('2026-02-05')">05-feb</button><button class="dday " data-k="2026-02-06" onclick="toggleDay('2026-02-06')">06-feb</button><button class="dday " data-k="2026-02-07" onclick="toggleDay('2026-02-07')">07-feb</button><button class="dday " data-k="2026-02-08" onclick="toggleDay('2026-02-08')">08-feb</button><button class="dday " data-k="2026-02-09" onclick="toggleDay('2026-02-09')">09-feb</button><button class="dday " data-k="2026-02-10" onclick="toggleDay('2026-02-10')">10-feb</button><button class="dday " data-k="2026-02-11" onclick="toggleDay('2026-02-11')">11-feb</button><button class="dday " data-k="2026-02-12" onclick="toggleDay('2026-02-12')">12-feb</button><button class="dday " data-k="2026-02-13" onclick="toggleDay('2026-02-13')">13-feb</button><button class="dday " data-k="2026-02-14" onclick="toggleDay('2026-02-14')">14-feb</button><button class="dday " data-k="2026-02-15" onclick="toggleDay('2026-02-15')">15-feb</button><button class="dday " data-k="2026-02-16" onclick="toggleDay('2026-02-16')">16-feb</button><button class="dday " data-k="2026-02-17" onclick="toggleDay('2026-02-17')">17-feb</button><button class="dday " data-k="2026-02-18" onclick="toggleDay('2026-02-18')">18-feb</button><button class="dday " data-k="2026-02-19" onclick="toggleDay('2026-02-19')">19-feb</button><button class="dday " data-k="2026-02-20" onclick="toggleDay('2026-02-20')">20-feb</button><button class="dday " data-k="2026-02-21" onclick="toggleDay('2026-02-21')">21-feb</button><button class="dday " data-k="2026-02-22" onclick="toggleDay('2026-02-22')">22-feb</button><button class="dday " data-k="2026-02-23" onclick="toggleDay('2026-02-23')">23-feb</button><button class="dday " data-k="2026-02-24" onclick="toggleDay('2026-02-24')">24-feb</button><button class="dday " data-k="2026-02-25" onclick="toggleDay('2026-02-25')">25-feb</button><button class="dday " data-k="2026-02-26" onclick="toggleDay('2026-02-26')">26-feb</button><button class="dday " data-k="2026-02-27" onclick="toggleDay('2026-02-27')">27-feb</button><button class="dday " data-k="2026-02-28" onclick="toggleDay('2026-02-28')">28-feb</button><button class="dday " data-k="2026-03-01" onclick="toggleDay('2026-03-01')">01-mar</button><button class="dday " data-k="2026-03-02" onclick="toggleDay('2026-03-02')">02-mar</button><button class="dday " data-k="2026-03-03" onclick="toggleDay('2026-03-03')">03-mar</button><button class="dday " data-k="2026-03-04" onclick="toggleDay('2026-03-04')">04-mar</button><button class="dday " data-k="2026-03-05" onclick="toggleDay('2026-03-05')">05-mar</button><button class="dday " data-k="2026-03-06" onclick="toggleDay('2026-03-06')">06-mar</button><button class="dday " data-k="2026-03-07" onclick="toggleDay('2026-03-07')">07-mar</button><button class="dday " data-k="2026-03-08" onclick="toggleDay('2026-03-08')">08-mar</button><button class="dday " data-k="2026-03-09" onclick="toggleDay('2026-03-09')">09-mar</button><button class="dday " data-k="2026-03-10" onclick="toggleDay('2026-03-10')">10-mar</button><button class="dday " data-k="2026-03-11" onclick="toggleDay('2026-03-11')">11-mar</button><button class="dday " data-k="2026-03-12" onclick="toggleDay('2026-03-12')">12-mar</button><button class="dday " data-k="2026-03-13" onclick="toggleDay('2026-03-13')">13-mar</button><button class="dday " data-k="2026-03-14" onclick="toggleDay('2026-03-14')">14-mar</button><button class="dday " data-k="2026-03-15" onclick="toggleDay('2026-03-15')">15-mar</button><button class="dday " data-k="2026-03-16" onclick="toggleDay('2026-03-16')">16-mar</button><button class="dday " data-k="2026-03-17" onclick="toggleDay('2026-03-17')">17-mar</button><button class="dday " data-k="2026-03-18" onclick="toggleDay('2026-03-18')">18-mar</button><button class="dday " data-k="2026-03-19" onclick="toggleDay('2026-03-19')">19-mar</button><button class="dday " data-k="2026-03-20" onclick="toggleDay('2026-03-20')">20-mar</button><button class="dday " data-k="2026-03-21" onclick="toggleDay('2026-03-21')">21-mar</button><button class="dday " data-k="2026-03-22" onclick="toggleDay('2026-03-22')">22-mar</button><button class="dday " data-k="2026-03-23" onclick="toggleDay('2026-03-23')">23-mar</button><button class="dday " data-k="2026-03-24" onclick="toggleDay('2026-03-24')">24-mar</button><button class="dday " data-k="2026-03-25" onclick="toggleDay('2026-03-25')">25-mar</button><button class="dday " data-k="2026-03-26" onclick="toggleDay('2026-03-26')">26-mar</button><button class="dday " data-k="2026-03-27" onclick="toggleDay('2026-03-27')">27-mar</button><button class="dday " data-k="2026-03-28" onclick="toggleDay('2026-03-28')">28-mar</button><button class="dday " data-k="2026-03-29" onclick="toggleDay('2026-03-29')">29-mar</button><button class="dday " data-k="2026-03-30" onclick="toggleDay('2026-03-30')">30-mar</button><button class="dday " data-k="2026-03-31" onclick="toggleDay('2026-03-31')">31-mar</button><button class="dday " data-k="2026-04-01" onclick="toggleDay('2026-04-01')">01-abr</button><button class="dday " data-k="2026-04-02" onclick="toggleDay('2026-04-02')">02-abr</button><button class="dday " data-k="2026-04-03" onclick="toggleDay('2026-04-03')">03-abr</button><button class="dday " data-k="2026-04-04" onclick="toggleDay('2026-04-04')">04-abr</button><button class="dday " data-k="2026-04-05" onclick="toggleDay('2026-04-05')">05-abr</button><button class="dday " data-k="2026-04-06" onclick="toggleDay('2026-04-06')">06-abr</button><button class="dday " data-k="2026-04-07" onclick="toggleDay('2026-04-07')">07-abr</button><button class="dday " data-k="2026-04-08" onclick="toggleDay('2026-04-08')">08-abr</button><button class="dday " data-k="2026-04-09" onclick="toggleDay('2026-04-09')">09-abr</button><button class="dday " data-k="2026-04-10" onclick="toggleDay('2026-04-10')">10-abr</button><button class="dday " data-k="2026-04-11" onclick="toggleDay('2026-04-11')">11-abr</button><button class="dday " data-k="2026-04-12" onclick="toggleDay('2026-04-12')">12-abr</button><button class="dday " data-k="2026-04-13" onclick="toggleDay('2026-04-13')">13-abr</button><button class="dday " data-k="2026-04-14" onclick="toggleDay('2026-04-14')">14-abr</button><button class="dday " data-k="2026-04-15" onclick="toggleDay('2026-04-15')">15-abr</button><button class="dday " data-k="2026-04-16" onclick="toggleDay('2026-04-16')">16-abr</button><button class="dday " data-k="2026-04-17" onclick="toggleDay('2026-04-17')">17-abr</button><button class="dday " data-k="2026-04-18" onclick="toggleDay('2026-04-18')">18-abr</button><button class="dday " data-k="2026-04-19" onclick="toggleDay('2026-04-19')">19-abr</button><button class="dday " data-k="2026-04-20" onclick="toggleDay('2026-04-20')">20-abr</button><button class="dday " data-k="2026-04-21" onclick="toggleDay('2026-04-21')">21-abr</button><button class="dday " data-k="2026-04-22" onclick="toggleDay('2026-04-22')">22-abr</button><button class="dday " data-k="2026-04-23" onclick="toggleDay('2026-04-23')">23-abr</button><button class="dday " data-k="2026-04-24" onclick="toggleDay('2026-04-24')">24-abr</button><button class="dday " data-k="2026-04-25" onclick="toggleDay('2026-04-25')">25-abr</button><button class="dday " data-k="2026-04-26" onclick="toggleDay('2026-04-26')">26-abr</button><button class="dday " data-k="2026-04-27" onclick="toggleDay('2026-04-27')">27-abr</button><button class="dday " data-k="2026-04-28" onclick="toggleDay('2026-04-28')">28-abr</button><button class="dday " data-k="2026-04-29" onclick="toggleDay('2026-04-29')">29-abr</button><button class="dday " data-k="2026-04-30" onclick="toggleDay('2026-04-30')">30-abr</button><button class="dday " data-k="2026-05-01" onclick="toggleDay('2026-05-01')">01-may</button><button class="dday " data-k="2026-05-02" onclick="toggleDay('2026-05-02')">02-may</button><button class="dday " data-k="2026-05-03" onclick="toggleDay('2026-05-03')">03-may</button><button class="dday " data-k="2026-05-04" onclick="toggleDay('2026-05-04')">04-may</button><button class="dday " data-k="2026-05-05" onclick="toggleDay('2026-05-05')">05-may</button><button class="dday " data-k="2026-05-06" onclick="toggleDay('2026-05-06')">06-may</button><button class="dday " data-k="2026-05-07" onclick="toggleDay('2026-05-07')">07-may</button><button class="dday " data-k="2026-05-08" onclick="toggleDay('2026-05-08')">08-may</button><button class="dday " data-k="2026-05-09" onclick="toggleDay('2026-05-09')">09-may</button><button class="dday " data-k="2026-05-10" onclick="toggleDay('2026-05-10')">10-may</button><button class="dday " data-k="2026-05-11" onclick="toggleDay('2026-05-11')">11-may</button><button class="dday " data-k="2026-05-12" onclick="toggleDay('2026-05-12')">12-may</button><button class="dday " data-k="2026-05-13" onclick="toggleDay('2026-05-13')">13-may</button><button class="dday " data-k="2026-05-14" onclick="toggleDay('2026-05-14')">14-may</button><button class="dday " data-k="2026-05-15" onclick="toggleDay('2026-05-15')">15-may</button><button class="dday " data-k="2026-05-16" onclick="toggleDay('2026-05-16')">16-may</button><button class="dday " data-k="2026-05-17" onclick="toggleDay('2026-05-17')">17-may</button><button class="dday " data-k="2026-05-18" onclick="toggleDay('2026-05-18')">18-may</button><button class="dday " data-k="2026-05-19" onclick="toggleDay('2026-05-19')">19-may</button><button class="dday " data-k="2026-05-20" onclick="toggleDay('2026-05-20')">20-may</button><button class="dday " data-k="2026-05-21" onclick="toggleDay('2026-05-21')">21-may</button><button class="dday " data-k="2026-05-22" onclick="toggleDay('2026-05-22')">22-may</button><button class="dday " data-k="2026-05-23" onclick="toggleDay('2026-05-23')">23-may</button><button class="dday " data-k="2026-05-24" onclick="toggleDay('2026-05-24')">24-may</button><button class="dday " data-k="2026-05-25" onclick="toggleDay('2026-05-25')">25-may</button><button class="dday " data-k="2026-05-26" onclick="toggleDay('2026-05-26')">26-may</button><button class="dday " data-k="2026-05-27" onclick="toggleDay('2026-05-27')">27-may</button><button class="dday " data-k="2026-05-28" onclick="toggleDay('2026-05-28')">28-may</button><button class="dday " data-k="2026-05-29" onclick="toggleDay('2026-05-29')">29-may</button><button class="dday " data-k="2026-05-30" onclick="toggleDay('2026-05-30')">30-may</button><button class="dday " data-k="2026-05-31" onclick="toggleDay('2026-05-31')">31-may</button><button class="dday " data-k="2026-06-01" onclick="toggleDay('2026-06-01')">01-jun</button><button class="dday " data-k="2026-06-02" onclick="toggleDay('2026-06-02')">02-jun</button><button class="dday " data-k="2026-06-03" onclick="toggleDay('2026-06-03')">03-jun</button><button class="dday " data-k="2026-06-04" onclick="toggleDay('2026-06-04')">04-jun</button><button class="dday " data-k="2026-06-05" onclick="toggleDay('2026-06-05')">05-jun</button><button class="dday " data-k="2026-06-06" onclick="toggleDay('2026-06-06')">06-jun</button><button class="dday " data-k="2026-06-07" onclick="toggleDay('2026-06-07')">07-jun</button><button class="dday " data-k="2026-06-08" onclick="toggleDay('2026-06-08')">08-jun</button><button class="dday " data-k="2026-06-09" onclick="toggleDay('2026-06-09')">09-jun</button><button class="dday " data-k="2026-06-10" onclick="toggleDay('2026-06-10')">10-jun</button><button class="dday " data-k="2026-06-11" onclick="toggleDay('2026-06-11')">11-jun</button><button class="dday " data-k="2026-06-12" onclick="toggleDay('2026-06-12')">12-jun</button><button class="dday " data-k="2026-06-13" onclick="toggleDay('2026-06-13')">13-jun</button><button class="dday " data-k="2026-06-14" onclick="toggleDay('2026-06-14')">14-jun</button><button class="dday " data-k="2026-06-15" onclick="toggleDay('2026-06-15')">15-jun</button><button class="dday " data-k="2026-06-16" onclick="toggleDay('2026-06-16')">16-jun</button><button class="dday " data-k="2026-06-17" onclick="toggleDay('2026-06-17')">17-jun</button><button class="dday " data-k="2026-06-18" onclick="toggleDay('2026-06-18')">18-jun</button><button class="dday " data-k="2026-06-19" onclick="toggleDay('2026-06-19')">19-jun</button><button class="dday " data-k="2026-06-20" onclick="toggleDay('2026-06-20')">20-jun</button><button class="dday " data-k="2026-06-21" onclick="toggleDay('2026-06-21')">21-jun</button><button class="dday " data-k="2026-06-22" onclick="toggleDay('2026-06-22')">22-jun</button><button class="dday " data-k="2026-06-23" onclick="toggleDay('2026-06-23')">23-jun</button><button class="dday " data-k="2026-06-24" onclick="toggleDay('2026-06-24')">24-jun</button><button class="dday " data-k="2026-06-25" onclick="toggleDay('2026-06-25')">25-jun</button><button class="dday " data-k="2026-06-26" onclick="toggleDay('2026-06-26')">26-jun</button><button class="dday " data-k="2026-06-27" onclick="toggleDay('2026-06-27')">27-jun</button><button class="dday " data-k="2026-06-28" onclick="toggleDay('2026-06-28')">28-jun</button><button class="dday " data-k="2026-06-29" onclick="toggleDay('2026-06-29')">29-jun</button><button class="dday " data-k="2026-06-30" onclick="toggleDay('2026-06-30')">30-jun</button><button class="dday " data-k="2026-07-01" onclick="toggleDay('2026-07-01')">01-jul</button><button class="dday " data-k="2026-07-02" onclick="toggleDay('2026-07-02')">02-jul</button><button class="dday " data-k="2026-07-03" onclick="toggleDay('2026-07-03')">03-jul</button><button class="dday " data-k="2026-07-04" onclick="toggleDay('2026-07-04')">04-jul</button><button class="dday " data-k="2026-07-05" onclick="toggleDay('2026-07-05')">05-jul</button><button class="dday " data-k="2026-07-06" onclick="toggleDay('2026-07-06')">06-jul</button><button class="dday " data-k="2026-07-07" onclick="toggleDay('2026-07-07')">07-jul</button><button class="dday " data-k="2026-07-08" onclick="toggleDay('2026-07-08')">08-jul</button><button class="dday " data-k="2026-07-09" onclick="toggleDay('2026-07-09')">09-jul</button><button class="dday " data-k="2026-07-10" onclick="toggleDay('2026-07-10')">10-jul</button><button class="dday " data-k="2026-07-11" onclick="toggleDay('2026-07-11')">11-jul</button><button class="dday " data-k="2026-07-12" onclick="toggleDay('2026-07-12')">12-jul</button><button class="dday " data-k="2026-07-13" onclick="toggleDay('2026-07-13')">13-jul</button><button class="dday " data-k="2026-07-14" onclick="toggleDay('2026-07-14')">14-jul</button><button class="dday " data-k="2026-07-15" onclick="toggleDay('2026-07-15')">15-jul</button><button class="dday " data-k="2026-07-16" onclick="toggleDay('2026-07-16')">16-jul</button><button class="dday " data-k="2026-07-17" onclick="toggleDay('2026-07-17')">17-jul</button><button class="dday " data-k="2026-07-18" onclick="toggleDay('2026-07-18')">18-jul</button><button class="dday " data-k="2026-07-19" onclick="toggleDay('2026-07-19')">19-jul</button><button class="dday " data-k="2026-07-20" onclick="toggleDay('2026-07-20')">20-jul</button><button class="dday " data-k="2026-07-21" onclick="toggleDay('2026-07-21')">21-jul</button><button class="dday " data-k="2026-07-22" onclick="toggleDay('2026-07-22')">22-jul</button><button class="dday " data-k="2026-07-23" onclick="toggleDay('2026-07-23')">23-jul</button><button class="dday " data-k="2026-07-24" onclick="toggleDay('2026-07-24')">24-jul</button><button class="dday " data-k="2026-07-25" onclick="toggleDay('2026-07-25')">25-jul</button><button class="dday " data-k="2026-07-26" onclick="toggleDay('2026-07-26')">26-jul</button><button class="dday " data-k="2026-07-27" onclick="toggleDay('2026-07-27')">27-jul</button><button class="dday " data-k="2026-07-28" onclick="toggleDay('2026-07-28')">28-jul</button><button class="dday " data-k="2026-07-29" onclick="toggleDay('2026-07-29')">29-jul</button><button class="dday " data-k="2026-07-30" onclick="toggleDay('2026-07-30')">30-jul</button><button class="dday " data-k="2026-07-31" onclick="toggleDay('2026-07-31')">31-jul</button><button class="dday " data-k="2026-08-01" onclick="toggleDay('2026-08-01')">01-ago</button><button class="dday " data-k="2026-08-02" onclick="toggleDay('2026-08-02')">02-ago</button><button class="dday " data-k="2026-08-03" onclick="toggleDay('2026-08-03')">03-ago</button><button class="dday " data-k="2026-08-04" onclick="toggleDay('2026-08-04')">04-ago</button><button class="dday " data-k="2026-08-05" onclick="toggleDay('2026-08-05')">05-ago</button><button class="dday " data-k="2026-08-06" onclick="toggleDay('2026-08-06')">06-ago</button><button class="dday " data-k="2026-08-07" onclick="toggleDay('2026-08-07')">07-ago</button><button class="dday " data-k="2026-08-08" onclick="toggleDay('2026-08-08')">08-ago</button><button class="dday " data-k="2026-08-09" onclick="toggleDay('2026-08-09')">09-ago</button><button class="dday " data-k="2026-08-10" onclick="toggleDay('2026-08-10')">10-ago</button><button class="dday on" data-k="2026-08-11" onclick="toggleDay('2026-08-11')">11-ago</button></div>
+    </div>
+    <!-- Bar chart for selected period -->
+    <div class="day-right">
+      <div class="dsel-lbl">VENTA DEL PERÍODO — REAL vs AA vs META</div>
+      <div class="day-info" id="day-info"><strong>martes, 11 de agosto de 2026</strong></div>
+      <div style="height:200px"><canvas id="dchart" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+    </div>
+  </div>
+  <!-- Daily table -->
+  <div class="tw" id="dtwrap"><div style="margin-bottom:4px;display:flex;justify-content:flex-end;gap:6px;align-items:center">
+      <span style="font-size:9px;color:#546e7a">Venta del Período</span>
+      <button onclick="copyTblImg('tbl-daily')" style="padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid #c5cae9;background:#e8eaf6;color:#1a237e;font-family:inherit">📷 Copiar</button>
+    </div><div id="tbl-daily" style="background:#fff"><table class="ttbl"><colgroup><col style="width:140px"><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:75px"><col style="width:75px"></colgroup><thead>
+<tr class="th0">
+  <th class="canal-hd" rowspan="2">Canal</th>
+  <th colspan="5">VENTA DEL PERÍODO</th>
+</tr>
+<tr class="th1">
+  <th>2025</th><th>META</th><th>REAL 2026</th><th>VS AA</th><th>VS META</th>
+</tr></thead><tbody><tr><td class="cn">Web/APP</td>
+<td class="nv mu">$4.2M</td><td class="nv or">$5.5M</td><td class="nv bl">$4.7M</td><td class="pct pos ">+12.2%</td><td class="pct neg ">-13.5%</td></tr><tr><td class="cn">Afiliación</td>
+<td class="nv mu">$32.8K</td><td class="nv or">—</td><td class="nv bl">$54.8K</td><td class="pct pos ">+67.0%</td><td class="pct na">—</td></tr><tr><td class="cn"><span class="tg" onclick="tExp('dmkp')">▶</span>MKP</td>
+<td class="nv mu">$1.2M</td><td class="nv or">$1.6M</td><td class="nv bl">$671.7K</td><td class="pct neg ">-44.8%</td><td class="pct neg ">-56.9%</td></tr><tr><td class="cn">TMK/WA</td>
+<td class="nv mu">$87.7K</td><td class="nv or">$61.1K</td><td class="nv bl">$49.0K</td><td class="pct neg ">-44.2%</td><td class="pct neg ">-19.9%</td></tr><tr><td class="cn">Entrega Tda</td>
+<td class="nv mu">$97.8K</td><td class="nv or">$233.3K</td><td class="nv bl">$136.7K</td><td class="pct pos ">+39.8%</td><td class="pct neg ">-41.4%</td></tr><tr class="tot"><td class="cn tot">Total</td>
+<td class="nv mu">$5.7M</td><td class="nv or">$7.3M</td><td class="nv bl">$5.7M</td><td class="pct neg ">-0.1%</td><td class="pct neg ">-22.9%</td></tr>
+<tr class="ps"><td class="cn mu" style="font-size:10px">Total PS</td>
+<td class="nv mu">$36.4M</td><td class="nv">—</td><td class="nv bl">$39.1M</td><td class="pct pos ">+7.6%</td><td></td></tr>
+</tbody></table></div></div>
+  <div class="ft" id="ft3">Fuente: Reporte BI · MDMF_Global_26vs25 · martes, 11 de agosto de 2026</div>
+</div>
+
+<script id="ms">
+const MN=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Sep','Oct','Nov','Dic'];
+var CJ1=null,CJ2=null,CJ3=null,DCHART=null;
+var PARSED=null, SEL=0, CMP='md'; // md=mismo dia, mf=misma fecha
+var SEL_DAYS=new Set();
+
+const SR=[
+  {name:'Web/APP',    c25:['Web + APP 2025'],    c26:['Web + APP 2026'],   mk:['ecommerce'],        sm:true},
+  {name:'Afiliación', c25:['Afiliados 2025'],     c26:['Afiliados 2026'],   mk:[],                   sm:false},
+  {name:'MKP',        c25:['Meli Drop 2025','Meli Full 2025','Amazon Drop 2025','Amazon Full 2025','TikTok 2025','Shein 2025'],
+                       c26:['Meli Drop 2026','Meli Full 2026','Amazon Drop 2026','Amazon Full 2026','TikTok 2026','Shein 2026'],
+                       mk:['mercado','amazon','tiktok'],sm:true},
+  {name:'TMK/WA',     c25:['TMK 2025','WA 2025'],c26:['TMK 2026','WA 2026'],mk:['tmk','wa'],         sm:true},
+  {name:'Entrega Tda',c25:['Ent. en Tienda 2025'],c26:['Ent. en Tienda 2026'],mk:['entrega','tienda'],sm:true},
+];
+const AC25=SR.flatMap(r=>r.c25), AC26=SR.flatMap(r=>r.c26);
+const DC=['Web/APP','TMK/WA','Entrega Tda'];
+const MSUB=[
+  {name:'Meli',  c25:['Meli Drop 2025','Meli Full 2025'],    c26:['Meli Drop 2026','Meli Full 2026'],
+   children:[{name:'Meli Drop',c25:['Meli Drop 2025'],c26:['Meli Drop 2026'],children:[]},
+             {name:'Meli Full',c25:['Meli Full 2025'],c26:['Meli Full 2026'],children:[]}]},
+  {name:'Amazon',c25:['Amazon Drop 2025','Amazon Full 2025'],c26:['Amazon Drop 2026','Amazon Full 2026'],
+   children:[{name:'Amazon Drop',c25:['Amazon Drop 2025'],c26:['Amazon Drop 2026'],children:[]},
+             {name:'Amazon Full',c25:['Amazon Full 2025'],c26:['Amazon Full 2026'],children:[]}]},
+  {name:'TikTok',c25:['TikTok 2025'],c26:['TikTok 2026'],children:[]},
+  {name:'Shein', c25:['Shein 2025'], c26:['Shein 2026'], children:[]},
+];
+
+function fM(v){if(v==null||isNaN(v))return '—';const a=Math.abs(v),s=v<0?'-':'';
+  if(a>=1e9)return s+'$'+(a/1e9).toFixed(1)+'B';
+  if(a>=1e6)return s+'$'+(a/1e6).toFixed(1)+'M';
+  return s+'$'+(a/1e3).toFixed(1)+'K';}
+function fP(v,d=1){if(v==null||isNaN(v))return null;return (v>=0?'+':'')+v.toFixed(d)+'%';}
+function pct(a,b){return b&&Math.abs(b)>1?(a-b)/b*100:null;}
+function pctCol(v){return v==null?'#9e9e9e':v>=0?'#1b5e20':'#b71c1c';}
+
+// Get the right 2025 comparison value based on CMP toggle
+function vs25(r,field){return CMP==='md'?(r[field+'_md']!=null?r[field+'_md']:r[field]):r[field];}
+function get25(r,field){return CMP==='md'?(r[field+'_md']!=null?r[field+'_md']:r[field]):r[field];}
+
+// Pct cell with colored background
+function ptd(v, extraCls=''){
+  if(v==null||isNaN(v)) return `<td class="pct na">—</td>`;
+  return `<td class="pct ${v>=0?'pos':'neg'} ${extraCls}">${fP(v)}</td>`;
+}
+function ntd(v,cls=''){return `<td class="nv ${cls}">${v!=null?fM(v):'—'}</td>`;}
+
+var HDRIDX={};
+var EXP={mkp:false,meli:false,amazon:false,dmkp:false,dmeli:false,damazon:false};
+
+function parseMetas(wb){
+  const ws=wb.Sheets['Metas 2026']; if(!ws) return null;
+  const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+  let hdrIdx=-1,janCol=-1;
+  for(let r=0;r<raw.length;r++){
+    const row=raw[r]; if(!row) continue;
+    for(let c=0;c<row.length;c++){
+      if(row[c]!=null&&String(row[c]).match(/^ene(ro)?$/i)){hdrIdx=r;janCol=c;break;}
+    }
+    if(hdrIdx>=0) break;
+  }
+  if(hdrIdx<0) return null;
+  const mm={};
+  for(let r=hdrIdx+1;r<raw.length;r++){
+    const row=raw[r]; if(!row) continue;
+    let name=null;
+    for(let c=0;c<row.length;c++){
+      const v=row[c];
+      if(v!=null&&typeof v==='string'&&v.trim()&&isNaN(v)){name=v.trim().toLowerCase();break;}
+    }
+    if(!name) continue;
+    const months=Array.from({length:12},(_,i)=>Number(row[janCol+i])||0);
+    if(months.every(v=>v===0)) continue;
+    mm[name]=months;
+  }
+  const get=keys=>{const acc=Array(12).fill(0);for(const [k,v] of Object.entries(mm))if(keys.some(kw=>k.includes(kw)))v.forEach((x,i)=>acc[i]+=x);return acc;};
+  const res={};
+  SR.forEach(ch=>{res[ch.name]=ch.mk.length?get(ch.mk):Array(12).fill(0);});
+  res['Total']=mm['monthly budget']||get(['ecommerce','mercado','amazon','tiktok','tmk','wa','entrega','tienda']);
+  // Individual MKP sub-channel metas for allocation
+  res['Meli']=get(['mercado','meli']);
+  res['Amazon']=get(['amazon']);
+  res['TikTok']=get(['tiktok']);
+  res['Shein']=Array(12).fill(0); // no meta for Shein
+  return res;
+}
+
+// MKP sub-channel meta share from official metas
+function mkpSubMetaShare(subName,m,om){
+  const meliM=om['Meli']?.[m]||0, amzM=om['Amazon']?.[m]||0, tikM=om['TikTok']?.[m]||0;
+  const tot=meliM+amzM+tikM;
+  if(tot===0) return 0;
+  if(subName==='Meli') return meliM/tot;
+  if(subName==='Amazon') return amzM/tot;
+  if(subName==='TikTok') return tikM/tot;
+  return 0;
+}
+
+function computeSub(sub,rows26,rows25,full25,dEl,dInM,mkpMTDMeta,mkpProyMeta,m,om){
+  const gcs2=(r,ns)=>ns.reduce((a,n)=>{const i=HDRIDX[n];return a+(i>=0&&r&&r[i]!=null?Number(r[i])||0:0);},0);
+  const r26=rows26.reduce((a,r)=>a+gcs2(r,sub.c26),0);
+  const r25=rows25.reduce((a,r)=>a+gcs2(r,sub.c25),0);
+  const f25=full25.reduce((a,r)=>a+gcs2(r,sub.c25),0);
+  const proy=dEl>0?r26*dInM/dEl:0;
+  const share=mkpSubMetaShare(sub.name,m,om);
+  const mtdMeta=mkpMTDMeta!=null?mkpMTDMeta*share:null;
+  const proyMeta=mkpProyMeta!=null?mkpProyMeta*share:null;
+  return {name:sub.name,mtdReal:r26,mtd25:r25,mtdVs25:pct(r26,r25),
+    mtdMeta:mtdMeta,mtdVsM:mtdMeta?pct(r26,mtdMeta):null,
+    proyReal:proy,proy25:f25,proyVs25:pct(proy,f25),
+    proyMeta:proyMeta,proyVsM:proyMeta?pct(proy,proyMeta):null,
+    children:(sub.children||[]).map(cc=>computeSub(cc,rows26,rows25,full25,dEl,dInM,mkpMTDMeta,mkpProyMeta,m,om))};
+}
+
+function parseAll(ab){
+  const wb=XLSX.read(ab,{type:'array',cellDates:true});
+  const ws=wb.Sheets['BD MF']; if(!ws) throw new Error('No hoja BD MF');
+  const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+  const hdr=raw[2];
+  hdr.forEach((h,i)=>{if(h!=null)HDRIDX[String(h)]=i;});
+  const ci=n=>hdr.indexOf(n);
+  const gc=(r,n)=>{const i=ci(n);return i>=0&&r&&r[i]!=null?Number(r[i])||0:0;};
+  const gcs=(r,ns)=>ns.reduce((a,n)=>a+gc(r,n),0);
+  const g25=r=>r&&r[1]!=null?Number(r[1])||0:0;
+  const g26=r=>r&&r[4]!=null?Number(r[4])||0:0;
+  const get26D=r=>{const d=r[ci('2026')];return d instanceof Date?d:new Date(d);};
+  const get25D=r=>{const d=r[0];return d instanceof Date?d:new Date(d);};
+
+  const om=parseMetas(wb); if(!om) throw new Error('No se pudo leer Metas 2026');
+
+  const all=raw.slice(3).filter(r=>{const d=r[0];return d instanceof Date||(typeof d==='string'&&!isNaN(Date.parse(d)));});
+  const yesterday=new Date(); yesterday.setDate(yesterday.getDate()-1); yesterday.setHours(23,59,59,999);
+  const allR26=all.filter(r=>{const dt=get26D(r);return !isNaN(dt)&&dt.getFullYear()===2026;});
+  let lastIdx=0;
+  for(let i=allR26.length-1;i>=0;i--){
+    const dt=get26D(allR26[i]);
+    if(dt>yesterday) continue;
+    if(gc(allR26[i],'Venta Meta 2026')!==0||SR.some(ch=>gcs(allR26[i],ch.c26)!==0)){lastIdx=i;break;}
+  }
+  const r26=allR26.slice(0,lastIdx+1);
+  const r25=all.slice(0,r26.length);
+  const lastDate=get26D(r26[r26.length-1]);
+  const curM=lastDate.getMonth();
+  const fy25Rows=all.filter(r=>{const dt=get25D(r);return !isNaN(dt)&&dt.getFullYear()===2025;});
+
+  // Parse BD MD for "mismo día" comparison
+  let r25_md=r25; // default fallback = same as MF
+  const wsMD2=wb.Sheets['BD MD'];
+  if(wsMD2){
+    try{
+      const rawMD2=XLSX.utils.sheet_to_json(wsMD2,{header:1,defval:null});
+      const hdrMD2=rawMD2[2];
+      const ciMD2=n=>hdrMD2.indexOf(n);
+      const allMD2=rawMD2.slice(3).filter(r=>{const d=r[0];return d instanceof Date||(typeof d==='string'&&!isNaN(Date.parse(d)));});
+      // Align MD 2025 rows to same length as r26
+      r25_md=allMD2.slice(0,r26.length);
+      console.log('BD MD loaded:',r25_md.length,'rows');
+    }catch(e){console.warn('BD MD error:',e);}
+  }
+
+  // Store all daily rows for date picker (with both MF and MD 2025 rows)
+  const allDailyRows=r26.map((row,i)=>({date:get26D(row),row26:row,row25_mf:r25[i],row25_md:r25_md[i]||r25[i]}));
+
+  function digShare(chName,m){
+    const tot=DC.reduce((a,n)=>a+(om[n]?.[m]||0),0);
+    return tot>0?(om[chName]?.[m]||0)/tot:0;
+  }
+  function getMetaMTD(ch,rows,m){
+    if(!ch.sm) return null;
+    if(ch.name==='MKP') return rows.reduce((a,r)=>a+gc(r,'Meta MKPlace'),0);
+    return rows.reduce((a,r)=>a+gc(r,'Meta Digital'),0)*digShare(ch.name,m);
+  }
+
+  const months=[];
+  for(let m=0;m<=curM;m++){
+    const isClosed=m<curM;
+    const monthEnd=isClosed?new Date(2026,m+1,0):lastDate; monthEnd.setHours(23,59,59,999);
+    const mRows26=r26.filter(r=>{const dt=get26D(r);return dt.getMonth()===m&&dt<=monthEnd;});
+    const mStart=r26.findIndex(r=>get26D(r).getMonth()===m);
+    const mRows25=mStart>=0?r25.slice(mStart,mStart+mRows26.length):[];
+    const fullM25=all.filter(r=>{const dt=get25D(r);return !isNaN(dt)&&dt.getFullYear()===2025&&dt.getMonth()===m;});
+    const dEl=mRows26.length, dInM=new Date(2026,m+1,0).getDate();
+    const ytdR26=r26.filter(r=>{const dt=get26D(r);return dt.getMonth()<=m&&dt<=monthEnd;});
+    const ytdR25=r25.slice(0,ytdR26.length);
+    const isfw=dEl<=7;
+    const totYtdR=ytdR26.reduce((a,r)=>a+gcs(r,AC26),0);
+    const totYtdM=ytdR26.reduce((a,r)=>a+gc(r,'Venta Meta 2026'),0);
+    const totAch=totYtdM>0?totYtdR/totYtdM:0;
+
+    // MD aligned rows for this month
+    const mStart_md=r25_md.length>0?r25_md.findIndex((_,i)=>i===mStart):mStart;
+    const mRows25_md=r25_md.slice(mStart>=0?mStart:0, mStart>=0?mStart+mRows26.length:mRows26.length);
+    const ytdR25_md=r25_md.slice(0,ytdR26.length);
+
+    const chData=SR.map(ch=>{
+      const metaArr=om[ch.name]||Array(12).fill(0), ofM=metaArr[m];
+      const mtdR=mRows26.reduce((a,r)=>a+gcs(r,ch.c26),0);
+      const mtd25_mf=mRows25.reduce((a,r)=>a+gcs(r,ch.c25),0);
+      const mtd25_md=mRows25_md.reduce((a,r)=>a+gcs(r,ch.c25),0);
+      const mtd25=mtd25_mf; // will be overridden at render time via CMP
+      const mtdMeta=getMetaMTD(ch,mRows26,m);
+      const ytdR=ytdR26.reduce((a,r)=>a+gcs(r,ch.c26),0);
+      const ytd25_mf=ytdR25.reduce((a,r)=>a+gcs(r,ch.c25),0);
+      const ytd25_md=ytdR25_md.reduce((a,r)=>a+gcs(r,ch.c25),0);
+      const ytd25=ytd25_mf;
+      let ytdM=null;
+      if(ch.sm){
+        if(ch.name==='MKP') ytdM=ytdR26.reduce((a,r)=>a+gc(r,'Meta MKPlace'),0);
+        else{let cs=0,ds=0;for(let mm=0;mm<=m;mm++){const dd=DC.reduce((a,n)=>a+(om[n]?.[mm]||0),0);cs+=(om[ch.name]?.[mm]||0);ds+=dd;}ytdM=ytdR26.reduce((a,r)=>a+gc(r,'Meta Digital'),0)*(ds>0?cs/ds:0);}
+      }
+      let pV=null,p25_mf=null,p25_md=null,pM=null,pV25=null,pVM=null;
+      if(!isClosed){
+        const mm=mtdMeta||0, ach=isfw?(ytdM&&ytdM>0?ytdR/ytdM:totAch):(mm>0?mtdR/mm:0);
+        pV=mtdR+(ofM-mm)*ach;
+        p25_mf=fullM25.reduce((a,r)=>a+gcs(r,ch.c25),0);
+        // MD: use corresponding rows from wsMD2 for full month 2025
+        const fullM25_md=r25_md.filter((_,i)=>{const dr=r26[i];if(!dr)return false;const dt=get26D(dr);return dt.getMonth()===m;});
+        p25_md=fullM25_md.reduce((a,r)=>a+(r?gcs(r,ch.c25):0),0)||p25_mf;
+        const p25=p25_mf;
+        pM=ch.sm?ofM:null; pV25=pct(pV,p25); pVM=ch.sm?pct(pV,ofM):null;
+      }
+      const fyM=ch.sm?metaArr.reduce((a,v)=>a+v,0):null;
+      const fy25=fy25Rows.reduce((a,r)=>a+gcs(r,ch.c25),0);
+      let fyP=null;
+      if(ch.sm){
+        if(isClosed){const rem=metaArr.slice(m+1).reduce((a,v)=>a+v,0);fyP=ytdR+rem*totAch;}
+        else{const comp=ytdR26.filter(r=>get26D(r).getMonth()<m).reduce((a,r)=>a+gcs(r,ch.c26),0);fyP=comp+(pV||0)+metaArr.slice(m+1).reduce((a,v)=>a+v,0);}
+      }
+      const fy25_md=r25_md.reduce((a,r)=>a+(r?gcs(r,ch.c25):0),0)||fy25;
+      return {name:ch.name,sm:ch.sm,mtdR,mtd25:mtd25_mf,mtd25_md,mtdMeta,
+        mtdVs25:pct(mtdR,mtd25_mf),mtdVs25_md:pct(mtdR,mtd25_md),
+        mtdVsM:ch.sm?pct(mtdR,mtdMeta):null,
+        pV,p25:p25_mf,p25_md,pM,
+        pV25:pct(pV,p25_mf),pV25_md:pct(pV,p25_md),pVM,
+        fy25,fy25_md,fyM,fyP,
+        fyVs25:fyP!=null&&fy25>0?pct(fyP,fy25):null,
+        fyVs25_md:fyP!=null&&fy25_md>0?pct(fyP,fy25_md):null,
+        fyVsM:fyP!=null&&fyM?pct(fyP,fyM):null,
+        ytdR,ytd25:ytd25_mf,ytd25_md,ytdM,
+        ytdVs25:pct(ytdR,ytd25_mf),ytdVs25_md:pct(ytdR,ytd25_md),
+        ytdVsM:ch.sm&&ytdM?pct(ytdR,ytdM):null};
+    });
+
+    const mkpCh=chData.find(c=>c.name==='MKP');
+    const mkpCh2=chData.find(c=>c.name==='MKP');
+    const mkpMTDMeta=mkpCh2?.mtdMeta||null;
+    const mkpProyMeta=mkpCh2?.pM||null;
+    const mkpSubs=MSUB.map(sub=>computeSub(sub,mRows26,mRows25,fullM25,dEl,dInM,mkpMTDMeta,mkpProyMeta,m,om));
+    const tMA=om['Total']||Array(12).fill(0), tOM=tMA[m];
+    const tMR=mRows26.reduce((a,r)=>a+gcs(r,AC26),0);
+    const tM25=mRows25.reduce((a,r)=>a+gcs(r,AC25),0);
+    const tMM=mRows26.reduce((a,r)=>a+gc(r,'Venta Meta 2026'),0);
+    const tYR=ytdR26.reduce((a,r)=>a+gcs(r,AC26),0);
+    const tY25=ytdR25.reduce((a,r)=>a+gcs(r,AC25),0);
+    const tYM=ytdR26.reduce((a,r)=>a+gc(r,'Venta Meta 2026'),0);
+    const tF25=fy25Rows.reduce((a,r)=>a+gcs(r,AC25),0);
+    const tFM=tMA.reduce((a,v)=>a+v,0);
+    const tA2=tYM>0?tYR/tYM:0;
+    let tFP,tPV=null,tP25=null,tPM=null;
+    if(isClosed){tFP=tYR+tMA.slice(m+1).reduce((a,v)=>a+v,0)*tA2;}
+    else{const isfw2=dEl<=7,tAr=isfw2?tA2:(tMM>0?tMR/tMM:0);tPV=tMR+(tOM-tMM)*tAr;tP25=fullM25.reduce((a,r)=>a+gcs(r,AC25),0);tPM=tOM;const tc=ytdR26.filter(r=>get26D(r).getMonth()<m).reduce((a,r)=>a+gcs(r,AC26),0);tFP=tc+tPV+tMA.slice(m+1).reduce((a,v)=>a+v,0);}
+    const tM25_md=mRows25_md.reduce((a,r)=>a+(r?gcs(r,AC25):0),0)||tM25;
+    const tY25_md=ytdR25_md.reduce((a,r)=>a+(r?gcs(r,AC25):0),0)||tY25;
+    const tF25_md=r25_md.reduce((a,r)=>a+(r?gcs(r,AC25):0),0)||tF25;
+    const tP25_md=r25_md.filter((_,i)=>{const dr=r26[i];if(!dr)return false;return get26D(dr).getMonth()===m;}).reduce((a,r)=>a+(r?gcs(r,AC25):0),0)||tP25||0;
+    const total={name:'Total',sm:true,
+      mtdR:tMR,mtd25:tM25,mtd25_md:tM25_md,mtdMeta:tMM,
+      mtdVs25:pct(tMR,tM25),mtdVs25_md:pct(tMR,tM25_md),mtdVsM:pct(tMR,tMM),
+      pV:tPV,p25:tP25,p25_md:tP25_md,pM:tPM,
+      pV25:pct(tPV,tP25),pV25_md:pct(tPV,tP25_md),pVM:pct(tPV,tPM),
+      fy25:tF25,fy25_md:tF25_md,fyM:tFM,fyP:tFP,
+      fyVs25:pct(tFP,tF25),fyVs25_md:pct(tFP,tF25_md),fyVsM:pct(tFP,tFM),
+      ytdR:tYR,ytd25:tY25,ytd25_md:tY25_md,ytdM:tYM,
+      ytdVs25:pct(tYR,tY25),ytdVs25_md:pct(tYR,tY25_md),ytdVsM:pct(tYR,tYM)};
+    const ps26=mRows26.reduce((a,r)=>a+g26(r),0), ps25=mRows25.reduce((a,r)=>a+g25(r),0);
+    const psY26=ytdR26.reduce((a,r)=>a+g26(r),0), psY25=ytdR25.reduce((a,r)=>a+g25(r),0);
+    const ps25_md=mRows25_md.reduce((a,r)=>a+(r?g25(r):0),0)||ps25;
+    const psY25_md=ytdR25_md.reduce((a,r)=>a+(r?g25(r):0),0)||psY25;
+    months.push({mNum:m,mName:MN[m+1],isClosed,dEl,dInM,
+      lastDate:isClosed?new Date(2026,m+1,0):lastDate,
+      channels:chData,total,mkpSubs,
+      ps26,ps25,ps25_md,psY26,psY25,psY25_md,
+      shMTD:ps26>0?tMR/ps26:0,shMTD25:ps25>0?tM25/ps25:0,
+      shMTD25_md:ps25_md>0?tM25_md/ps25_md:0,
+      shYtd:psY26>0?tYR/psY26:0,shYtd25:psY25>0?tY25/psY25:0,
+      shYtd25_md:psY25_md>0?tY25_md/psY25_md:0});
+  }
+  return {months,latestMIdx:months.length-1,allDailyRows,om,fy25Rows,gc,gcs,g25,g26};
+}
+
+// ── Table rendering (Image 2 format, two sub-tabs) ────────────────
+function mkpSubRowsMes(subs,isClosed){
+  let h='';
+  subs.forEach(sub=>{
+    const hasC=(sub.children||[]).length>0;
+    const isMe=sub.name==='Meli',isA=sub.name==='Amazon';
+    const expKey=isMe?'meli':isA?'amazon':null;
+    const exp=expKey&&EXP[expKey];
+    const tog=hasC?`<span class="tg" onclick="event.stopPropagation();tExp('${expKey}')">${exp?'▼':'▶'}</span>`:'<span class="tg" style="opacity:0">▶</span>';
+    h+=`<tr class="sub1"><td class="cn sub1">${tog}${sub.name}</td>
+${ntd(sub.mtd25,'mu')}${ntd(sub.mtdMeta||null,'or')}${ntd(sub.mtdReal,'bl')}
+${ptd(sub.mtdVs25)}${ptd(sub.mtdMeta!=null?sub.mtdVsM:null,'sep')}`;
+    if(!isClosed) h+=`${ntd(sub.proy25,'mu')}${ntd(sub.proyMeta||null,'or')}${ntd(sub.proyReal,'bl')}
+${ptd(sub.proyVs25)}${ptd(sub.proyVsM||null,'sep')}`;
+    h+='</tr>';
+    if(exp&&hasC)(sub.children||[]).forEach(c=>{
+      h+=`<tr class="sub2"><td class="cn sub2">${c.name}</td>
+${ntd(c.mtd25,'mu')}<td class="nv">—</td>${ntd(c.mtdReal,'bl')}
+${ptd(c.mtdVs25)}${ptd(null,'sep')}`;
+      if(!isClosed) h+=`${ntd(c.proy25,'mu')}<td class="nv">—</td>${ntd(c.proyReal,'bl')}
+${ptd(c.proyVs25)}${ptd(null,'sep')}`;
+      h+='</tr>';
+    });
+  });
+  return h;
+}
+
+function mkpSubRowsYtd(subs,fyScale){
+  let h='';
+  subs.forEach(sub=>{
+    const hasC=(sub.children||[]).length>0;
+    const isMe=sub.name==='Meli',isA=sub.name==='Amazon';
+    const expKey=isMe?'meli':isA?'amazon':null;
+    const exp=expKey&&EXP[expKey];
+    const tog=hasC?`<span class="tg" onclick="event.stopPropagation();tExp('${expKey}')">${exp?'▼':'▶'}</span>`:'<span class="tg" style="opacity:0">▶</span>';
+    // For YTD sub, compute YTD values from mtdReal (approx - we store full period)
+    h+=`<tr class="sub1"><td class="cn sub1">${tog}${sub.name}</td>
+${ntd(sub.mtd25,'mu')}<td class="nv or">—</td>${ntd(sub.mtdReal,'bl')}
+${ptd(sub.mtdVs25)}${ptd(null,'sep')}
+${ntd(sub.mtd25*fyScale,'mu')}<td class="nv or">—</td>${ntd(sub.mtdReal*fyScale,'bl')}
+${ptd(sub.mtdVs25)}${ptd(null)}
+</tr>`;
+    if(exp&&hasC)(sub.children||[]).forEach(c=>{
+      h+=`<tr class="sub2"><td class="cn sub2">${c.name}</td>
+${ntd(c.mtd25,'mu')}<td class="nv">—</td>${ntd(c.mtdReal,'bl')}
+${ptd(c.mtdVs25)}${ptd(null,'sep')}
+${ntd(c.mtd25*fyScale,'mu')}<td class="nv">—</td>${ntd(c.mtdReal*fyScale,'bl')}
+${ptd(c.mtdVs25)}${ptd(null)}
+</tr>`;
+    });
+  });
+  return h;
+}
+
+function renderTableMes(d){
+  const ic=d.isClosed, mn=d.mName.toUpperCase();
+  const rows=[...d.channels,d.total];
+  const secProy=ic?'':` <th colspan="5" class="s2">${mn} PROYECCIÓN</th>`;
+  const colsProy=ic?'':5;
+  const nSecs=ic?1:2;
+  const cg=`<colgroup><col style="width:130px">${Array(nSecs*5).fill('').map((_,i)=>i%5<3?'<col style="width:88px">':'<col style="width:75px">').join('')}</colgroup>`;
+  let html=`<table class="ttbl">${cg}<thead>
+<tr class="th0">
+  <th class="canal-hd" rowspan="2">Canal</th>
+  <th colspan="5">${mn} ${ic?'CIERRE':'MTD'}</th>
+  ${ic?'':`<th colspan="5" class="s2">${mn} PROYECCIÓN</th>`}
+</tr>
+<tr class="th1">
+  <th>2025</th><th>META</th><th>REAL</th><th>VS 25</th><th class="${ic?'':'sep'}">VS META</th>
+  ${ic?'':'<th>2025 FULL</th><th>META '+mn+'</th><th>PROY</th><th>VS 25</th><th class="sep">VS META</th>'}
+</tr></thead><tbody>`;
+
+  rows.forEach(r=>{
+    const isTot=r.name==='Total', isMKP=r.name==='MKP';
+    const exp=isMKP&&EXP.mkp;
+    const tog=isMKP?`<span class="tg" onclick="tExp('mkp')">${exp?'▼':'▶'}</span>`:'';
+    html+=`<tr class="${isTot?'tot':''}">
+<td class="cn ${isTot?'tot':''}">${tog}${r.name}</td>
+${ntd(get25(r,'mtd25'),'mu')}${ntd(r.mtdMeta,'or')}${ntd(r.mtdR,'bl')}
+${ptd(vs25(r,'mtdVs25'))}${ptd(r.mtdVsM,ic?'':'sep')}`;
+    if(!ic) html+=`${ntd(get25(r,'p25'),'mu')}${ntd(r.pM,'or')}${ntd(r.pV,'bl')}
+${ptd(vs25(r,'pV25'))}${ptd(r.pVM,'sep')}`;
+    html+='</tr>';
+    if(isMKP&&exp) html+=mkpSubRowsMes(d.mkpSubs,ic);
+  });
+
+  // PS rows
+  html+=`<tr class="ps">
+<td class="cn mu" style="font-size:10px">Total PS</td>
+${ntd(CMP==='md'?d.ps25_md:d.ps25,'mu')}<td class="nv">—</td>${ntd(d.ps26,'bl')}
+${ptd(pct(d.ps26,CMP==='md'?d.ps25_md:d.ps25))}${ptd(null,ic?'':'sep')}
+${ic?'':`<td colspan="5"></td>`}
+</tr>
+<tr class="ps">
+<td class="cn mu" style="font-size:10px">% Share PS</td>
+<td class="nv mu">${(d.shMTD25*100).toFixed(1)}%</td><td class="nv">—</td>
+<td class="nv bl">${(d.shMTD*100).toFixed(1)}%</td>
+${ptd((d.shMTD-d.shMTD25)*100)}${ptd(null,ic?'':'sep')}
+${ic?'':`<td colspan="5"></td>`}
+</tr></tbody></table>`;
+  // Wrap in named div for per-table copy
+  return `<div style="margin-bottom:4px;display:flex;justify-content:flex-end;gap:6px;align-items:center">
+    <span style="font-size:9px;color:#546e7a">${d.mName.toUpperCase()} MTD + Proyección</span>
+    <button onclick="copyTblImg('tbl-mes')" style="padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid #c5cae9;background:#e8eaf6;color:#1a237e;font-family:inherit">📷 Copiar</button>
+  </div><div id="tbl-mes" style="background:#fff">${html}</div>`;
+}
+
+function renderTableYtd(d){
+  const rows=[...d.channels,d.total];
+  const mkpCh=d.channels.find(c=>c.name==='MKP');
+  const fyScale=mkpCh&&mkpCh.fyP&&mkpCh.ytdR>0?mkpCh.fyP/mkpCh.ytdR:1;
+
+  const cW2=130,nW2=88,pW2=75;
+  const cg2=`<colgroup><col style="width:${cW2}px">${Array(10).fill('').map((_,i)=>i%5<3?`<col style="width:${nW2}px">`:`<col style="width:${pW2}px">`).join('')}</colgroup>`;
+  let html=`<table class="ttbl" style="margin-top:10px">${cg2}<thead>
+<tr class="th0">
+  <th class="canal-hd" rowspan="2">Canal</th>
+  <th colspan="5">YTD 2026</th>
+  <th colspan="5" class="s2">PROYECCIÓN FY 2026</th>
+</tr>
+<tr class="th1">
+  <th>YTD 25</th><th>META YTD</th><th>REAL YTD</th><th>VS 25</th><th class="sep">VS META</th>
+  <th>FY 2025</th><th>META FY</th><th>PROY FY</th><th>VS 25</th><th>VS META</th>
+</tr></thead><tbody>`;
+
+  rows.forEach(r=>{
+    const isTot=r.name==='Total', isMKP=r.name==='MKP';
+    const exp=isMKP&&EXP.mkp;
+    const tog=isMKP?`<span class="tg" onclick="tExp('mkp')">${exp?'▼':'▶'}</span>`:'';
+    html+=`<tr class="${isTot?'tot':''}">
+<td class="cn ${isTot?'tot':''}">${tog}${r.name}</td>
+${ntd(get25(r,'ytd25'),'mu')}${ntd(r.ytdM,'or')}${ntd(r.ytdR,'bl')}
+${ptd(vs25(r,'ytdVs25'))}${ptd(r.ytdVsM,'sep')}
+${ntd(get25(r,'fy25'),'mu')}${ntd(r.fyM,'or')}${ntd(r.fyP,'bl')}
+${ptd(vs25(r,'fyVs25'))}${ptd(r.fyVsM)}
+</tr>`;
+    if(isMKP&&exp) html+=mkpSubRowsYtd(d.mkpSubs,fyScale);
+  });
+
+  html+=`<tr class="ps">
+<td class="cn mu" style="font-size:10px">Total PS</td>
+${ntd(d.psY25,'mu')}<td class="nv">—</td>${ntd(d.psY26,'bl')}
+${ptd(pct(d.psY26,d.psY25))}<td class="pct na sep">—</td>
+<td colspan="5"></td>
+</tr>
+<tr class="ps">
+<td class="cn mu" style="font-size:10px">% Share PS</td>
+<td class="nv mu">${(d.shYtd25*100).toFixed(1)}%</td><td class="nv">—</td>
+<td class="nv bl">${(d.shYtd*100).toFixed(1)}%</td>
+${ptd((d.shYtd-d.shYtd25)*100)}<td class="pct na sep">—</td>
+<td colspan="5"></td>
+</tr></tbody></table>`;
+  return `<div style="margin-bottom:4px;display:flex;justify-content:flex-end;gap:6px;align-items:center">
+    <span style="font-size:9px;color:#546e7a">YTD + Proyección FY</span>
+    <button onclick="copyTblImg('tbl-ytd')" style="padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid #c5cae9;background:#e8eaf6;color:#1a237e;font-family:inherit">📷 Copiar</button>
+  </div><div id="tbl-ytd" style="background:#fff">${html}</div>`;
+}
+
+function renderTable(d){
+  // Show both tables always
+  document.getElementById('twrap').innerHTML=renderTableMes(d)+renderTableYtd(d);
+  const note=d.isClosed?`${d.mName} cerrado`:`Al ${d.lastDate.toLocaleDateString('es-MX',{day:'numeric',month:'long'})} · ${d.dEl}/${d.dInM} días`;
+  document.getElementById('ft1').textContent=`Fuente: Reporte BI · MDMF_Global_26vs25 · ${note}`;
+}
+
+function setCmp(mode){
+  CMP=mode;
+  ['md-btn','mf-btn','md-btn3','mf-btn3'].forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    el.classList.toggle('on',(id.startsWith('md')?'md':'mf')===mode);
+  });
+  if(PARSED){renderTable(PARSED.months[SEL]);renderDailyFull();}
+}
+
+function tExp(key){
+  EXP[key]=!EXP[key];
+  if(key==='mkp'&&!EXP.mkp){EXP.meli=false;EXP.amazon=false;}
+  if(key==='dmkp'&&!EXP.dmkp){EXP.dmeli=false;EXP.damazon=false;}
+  if(PARSED){renderTable(PARSED.months[SEL]);renderDailyTable();}
+}
+
+// ── Charts ──────────────────────────────────────────────────────────
+function renderCharts(d){
+  const chs=d.channels.filter(c=>c.name!=='Afiliación');
+  const names=chs.map(c=>c.name);
+  const copts={responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{font:{size:9},boxWidth:10}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fM(c.raw)}`}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:9.5}}},y:{ticks:{font:{size:9.5},callback:v=>fM(v)},grid:{color:'#f0f0f0'}}}};
+  document.getElementById('ctjul').textContent=`${d.mName} MTD — Real vs 2025 vs Meta`;
+  if(CJ1)CJ1.destroy();
+  CJ1=new Chart(document.getElementById('cjul'),{type:'bar',data:{labels:names,datasets:[
+    {label:'2025',data:chs.map(c=>c.mtd25),backgroundColor:'#b0bec5',borderRadius:3},
+    {label:'Meta',data:chs.map(c=>c.mtdMeta),backgroundColor:'rgba(230,81,0,.65)',borderRadius:3},
+    {label:'Real',data:chs.map(c=>c.mtdR),backgroundColor:'#1a237e',borderRadius:3}]},options:copts});
+  if(CJ2)CJ2.destroy();
+  CJ2=new Chart(document.getElementById('cytd'),{type:'bar',data:{labels:names,datasets:[
+    {label:'YTD 2025',data:chs.map(c=>c.ytd25),backgroundColor:'#b0bec5',borderRadius:3},
+    {label:'Meta YTD',data:chs.map(c=>c.ytdM),backgroundColor:'rgba(230,81,0,.65)',borderRadius:3},
+    {label:'Real YTD',data:chs.map(c=>c.ytdR),backgroundColor:'#1565c0',borderRadius:3}]},options:copts});
+  if(CJ3)CJ3.destroy();
+  CJ3=new Chart(document.getElementById('cfy'),{type:'bar',data:{labels:names,datasets:[
+    {label:'FY 2025',data:chs.map(c=>c.fy25),backgroundColor:'#b0bec5',borderRadius:3},
+    {label:'Meta FY',data:chs.map(c=>c.fyM),backgroundColor:'rgba(230,81,0,.65)',borderRadius:3},
+    {label:'Proy FY',data:chs.map(c=>c.fyP),backgroundColor:'#37474f',borderRadius:3}]},options:copts});
+  const tot=d.total,mn=d.mName;
+  function chip(title,rows){return `<div class="kchip"><div class="ktitle">${title}</div>${rows.map(row=>row.div?'<div class="kdiv"></div>':`<div class="krow2"><span class="klbl">${row.lbl}</span><span class="${row.big?'kval':'kval sm'}" style="color:${row.color||'#212121'}">${row.val}</span>${row.p!=null?`<span class="kb" style="color:${pctCol(row.p)}">${fP(row.p)}</span>`:''}</div>`).join('')}</div>`;}
+  document.getElementById('kpis').innerHTML=`
+<div class="kpi-sec"><div class="kpi-stitle">${mn} MTD</div><div class="krow">
+${chip(`Real ${mn} 2026`,[{lbl:'Real 2026',val:fM(tot.mtdR),color:'#1a237e',big:true},{div:true},{lbl:'Real 2025',val:fM(tot.mtd25),color:'#546e7a'},{lbl:'Var YoY',val:'',p:tot.mtdVs25}])}
+${chip('Meta MTD',[{lbl:'Meta',val:fM(tot.mtdMeta),color:'#e65100',big:true},{div:true},{lbl:'Real vs Meta',val:'',p:tot.mtdVsM}])}
+</div></div>
+<div class="kpi-sec"><div class="kpi-stitle">Acumulado del Año</div><div class="krow">
+${chip('YTD vs 2025',[{lbl:'YTD 2026',val:fM(tot.ytdR),color:'#1565c0',big:true},{div:true},{lbl:'YTD 2025',val:fM(tot.ytd25),color:'#546e7a'},{lbl:'Var YoY',val:'',p:tot.ytdVs25}])}
+${chip('YTD vs Meta',[{lbl:'YTD 2026',val:fM(tot.ytdR),color:'#1565c0',big:true},{div:true},{lbl:'Meta YTD',val:fM(tot.ytdM),color:'#e65100'},{lbl:'Cumpl.',val:'',p:tot.ytdVsM}])}
+${chip('Proyección FY',[{lbl:'Proy FY',val:fM(tot.fyP),color:'#37474f',big:true},{div:true},{lbl:'Meta FY',val:fM(tot.fyM),color:'#e65100',p:tot.fyVsM},{lbl:'FY 2025',val:fM(tot.fy25),color:'#546e7a',p:tot.fyVs25}])}
+</div></div>`;
+}
+
+// ── Daily view ────────────────────────────────────────────────────
+function dKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
+function buildDatePicker(){
+  const rows=PARSED.allDailyRows;
+  const yesterday=new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yKey=dKey(yesterday);
+  // Find actual key in data closest to yesterday
+  const allKeys=rows.map(r=>dKey(r.date));
+  const useKey=allKeys.includes(yKey)?yKey:allKeys[allKeys.length-1];
+  SEL_DAYS=new Set([useKey]);
+
+  const grid=document.getElementById('dsel-grid');
+  grid.innerHTML=rows.map(r=>{
+    const k=dKey(r.date);
+    const lbl=r.date.toLocaleDateString('es-MX',{day:'2-digit',month:'short'});
+    return `<button class="dday ${SEL_DAYS.has(k)?'on':''}" data-k="${k}" onclick="toggleDay('${k}')">${lbl}</button>`;
+  }).join('');
+  // Scroll to last selected
+  setTimeout(()=>{const sel=grid.querySelector('.dday.on');if(sel)sel.scrollIntoView({block:'nearest'});},50);
+}
+
+function toggleDay(k){
+  if(SEL_DAYS.has(k)) SEL_DAYS.delete(k); else SEL_DAYS.add(k);
+  if(SEL_DAYS.size===0){SEL_DAYS.add(k);} // keep at least 1
+  document.querySelectorAll('#dsel-grid .dday').forEach(b=>b.classList.toggle('on',SEL_DAYS.has(b.dataset.k)));
+  renderDailyFull();
+}
+
+function selQuick(type){
+  const rows=PARSED.allDailyRows;
+  SEL_DAYS.clear();
+  const yesterday=new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yKey=dKey(yesterday);
+  const allKeys=rows.map(r=>dKey(r.date));
+  if(type==='yesterday'){
+    const useKey=allKeys.includes(yKey)?yKey:allKeys[allKeys.length-1];
+    SEL_DAYS.add(useKey);
+  } else if(type==='week'){
+    rows.slice(-7).forEach(r=>SEL_DAYS.add(dKey(r.date)));
+  } else if(type==='month'){
+    const curM=yesterday.getMonth();
+    rows.filter(r=>r.date.getMonth()===curM).forEach(r=>SEL_DAYS.add(dKey(r.date)));
+  }
+  document.querySelectorAll('#dsel-grid .dday').forEach(b=>b.classList.toggle('on',SEL_DAYS.has(b.dataset.k)));
+  renderDailyFull();
+}
+
+function getSelRows(){
+  return PARSED.allDailyRows.filter(r=>SEL_DAYS.has(dKey(r.date)));
+}
+
+function computeDailyData(selRows){
+  const {gc,gcs,g25,g26,om}=PARSED;
+  const latestM=PARSED.months[PARSED.latestMIdx].mNum;
+  function digShare(chName,m){const tot=DC.reduce((a,n)=>a+(om[n]?.[m]||0),0);return tot>0?(om[chName]?.[m]||0)/tot:0;}
+  const channels=SR.map(ch=>{
+    const r26v=selRows.reduce((a,r)=>a+gcs(r.row26,ch.c26),0);
+    const r25v=selRows.reduce((a,r)=>a+gcs(r[CMP==='md'?'row25_md':'row25_mf']||r.row25_mf||r.row26,ch.c25),0);
+    let meta=null;
+    if(ch.sm){
+      if(ch.name==='MKP') meta=selRows.reduce((a,r)=>a+gc(r.row26,'Meta MKPlace'),0);
+      else meta=selRows.reduce((a,r)=>a+gc(r.row26,'Meta Digital'),0)*digShare(ch.name,latestM);
+    }
+    return {name:ch.name,sm:ch.sm,r26:r26v,r25:r25v,vs25:pct(r26v,r25v),meta,vsMeta:meta!=null?pct(r26v,meta):null};
+  });
+  const mkpCh3=channels.find(c=>c.name==='MKP');
+  const dayMKPMeta=mkpCh3?.meta||null;
+  const mkpSubs=MSUB.map(sub=>{
+    const compD=s=>{
+      const r26v=selRows.reduce((a,r)=>a+gcs(r.row26,s.c26),0);
+      const r25v=selRows.reduce((a,r)=>a+gcs(r[CMP==='md'?'row25_md':'row25_mf']||r.row25_mf||r.row26,s.c25),0);
+      const share=mkpSubMetaShare(s.name,latestM,om);
+      const sMeta=dayMKPMeta!=null&&share>0?dayMKPMeta*share:null;
+      return{name:s.name,r26:r26v,r25:r25v,vs25:pct(r26v,r25v),
+        meta:sMeta,vsMeta:sMeta?pct(r26v,sMeta):null,
+        children:(s.children||[]).map(compD)};};
+    return compD(sub);
+  });
+  const totR26=selRows.reduce((a,r)=>a+gcs(r.row26,AC26),0);
+  const totR25=selRows.reduce((a,r)=>a+gcs(r[CMP==='md'?'row25_md':'row25_mf']||r.row25_mf,AC25),0);
+  const totMeta=selRows.reduce((a,r)=>a+gc(r.row26,'Venta Meta 2026'),0);
+  const ps26=selRows.reduce((a,r)=>a+g26(r.row26),0);
+  const ps25=selRows.reduce((a,r)=>a+g25(r[CMP==='md'?'row25_md':'row25_mf']||r.row25_mf||r.row26),0);
+  return {channels,mkpSubs,totR26,totR25,totMeta,totVs25:pct(totR26,totR25),totVsMeta:pct(totR26,totMeta),ps26,ps25};
+}
+
+function dailySubRows(subs){
+  let h='';
+  subs.forEach(sub=>{
+    const hasC=(sub.children||[]).length>0;
+    const isMe=sub.name==='Meli',isA=sub.name==='Amazon';
+    const expKey=isMe?'dmeli':isA?'damazon':null;
+    const exp=expKey&&EXP[expKey];
+    const tog=hasC?`<span class="tg" onclick="event.stopPropagation();tExp('${expKey}')">${exp?'▼':'▶'}</span>`:'<span class="tg" style="opacity:0">▶</span>';
+    h+=`<tr class="sub1"><td class="cn sub1">${tog}${sub.name}</td>
+${ntd(sub.r25,'mu')}${ntd(sub.meta||null,'or')}${ntd(sub.r26,'bl')}${ptd(sub.vs25)}${ptd(sub.vsMeta||null)}</tr>`;
+    if(exp&&hasC)(sub.children||[]).forEach(c=>{
+      h+=`<tr class="sub2"><td class="cn sub2">${c.name}</td>
+${ntd(c.r25,'mu')}${ntd(c.meta||null,'or')}${ntd(c.r26,'bl')}${ptd(c.vs25)}${ptd(c.vsMeta||null)}</tr>`;
+    });
+  });
+  return h;
+}
+
+function renderDailyChart(daily){
+  const chs=daily.channels.filter(c=>c.name!=='Afiliación');
+  const copts={responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{labels:{font:{size:9},boxWidth:10}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fM(c.raw)}`}}},
+    scales:{x:{ticks:{font:{size:9},callback:v=>fM(v)},grid:{color:'#f0f0f0'}},y:{grid:{display:false},ticks:{font:{size:9.5}}}}};
+  if(DCHART) DCHART.destroy();
+  DCHART=new Chart(document.getElementById('dchart'),{type:'bar',data:{
+    labels:chs.map(c=>c.name),datasets:[
+      {label:'Real 2026',data:chs.map(c=>c.r26),backgroundColor:'#1a237e',borderRadius:3},
+      {label:'Real 2025',data:chs.map(c=>c.r25),backgroundColor:'#b0bec5',borderRadius:3},
+      {label:'Meta',data:chs.map(c=>c.meta),backgroundColor:'rgba(230,81,0,.65)',borderRadius:3},
+    ]},options:copts});
+}
+
+function renderDailyTable(){
+  if(!PARSED) return;
+  const selRows=getSelRows();
+  if(selRows.length===0) return;
+  const daily=computeDailyData(selRows);
+  // Build info line
+  const dates=selRows.map(r=>r.date).sort((a,b)=>a-b);
+  const dateStr=dates.length===1?
+    dates[0].toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):
+    `${dates[0].toLocaleDateString('es-MX',{day:'numeric',month:'short'})} – ${dates[dates.length-1].toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'})} (${dates.length} días)`;
+  document.getElementById('day-info').innerHTML=`<strong>${dateStr}</strong>`;
+
+  // Chart
+  renderDailyChart(daily);
+
+  // Table
+  const cgD=`<colgroup><col style="width:140px"><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:75px"><col style="width:75px"></colgroup>`;
+  let html=`<table class="ttbl">${cgD}<thead>
+<tr class="th0">
+  <th class="canal-hd" rowspan="2">Canal</th>
+  <th colspan="5">VENTA DEL PERÍODO</th>
+</tr>
+<tr class="th1">
+  <th>2025</th><th>META</th><th>REAL 2026</th><th>VS AA</th><th>VS META</th>
+</tr></thead><tbody>`;
+
+  daily.channels.forEach(r=>{
+    const isMKP=r.name==='MKP', exp=isMKP&&EXP.dmkp;
+    const tog=isMKP?`<span class="tg" onclick="tExp('dmkp')">${exp?'▼':'▶'}</span>`:'';
+    html+=`<tr><td class="cn">${tog}${r.name}</td>
+${ntd(r.r25,'mu')}${ntd(r.meta,'or')}${ntd(r.r26,'bl')}${ptd(r.vs25)}${ptd(r.vsMeta)}</tr>`;
+    if(isMKP&&exp) html+=dailySubRows(daily.mkpSubs);
+  });
+  html+=`<tr class="tot"><td class="cn tot">Total</td>
+${ntd(daily.totR25,'mu')}${ntd(daily.totMeta,'or')}${ntd(daily.totR26,'bl')}${ptd(daily.totVs25)}${ptd(daily.totVsMeta)}</tr>
+<tr class="ps"><td class="cn mu" style="font-size:10px">Total PS</td>
+${ntd(daily.ps25,'mu')}<td class="nv">—</td>${ntd(daily.ps26,'bl')}${ptd(pct(daily.ps26,daily.ps25))}<td></td></tr>
+</tbody></table>`;
+
+  document.getElementById('dtwrap').innerHTML=
+    `<div style="margin-bottom:4px;display:flex;justify-content:flex-end;gap:6px;align-items:center">
+      <span style="font-size:9px;color:#546e7a">Venta del Período</span>
+      <button onclick="copyTblImg('tbl-daily')" style="padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid #c5cae9;background:#e8eaf6;color:#1a237e;font-family:inherit">📷 Copiar</button>
+    </div><div id="tbl-daily" style="background:#fff">${html}</div>`;
+}
+
+function renderDailyFull(){
+  renderDailyTable();
+}
+
+// ── Month selector ────────────────────────────────────────────────
+function buildMonthBar(){
+  document.getElementById('mbtn').innerHTML=PARSED.months.map((m,i)=>
+    `<button class="mf ${i===SEL?'on':''}" onclick="selectMonth(${i})">${m.mName}${m.isClosed?'':' *'}</button>`).join('');
+  document.getElementById('mbar').style.display='flex';
+}
+function selectMonth(idx){
+  SEL=idx; EXP.mkp=false;EXP.meli=false;EXP.amazon=false;
+  buildMonthBar(); renderTable(PARSED.months[idx]);
+  renderCharts(PARSED.months[PARSED.latestMIdx]);
+}
+function render(p){
+  PARSED=p; SEL=p.latestMIdx;
+  buildMonthBar(); selectMonth(SEL);
+  buildDatePicker(); renderDailyFull();
+  const mn=p.months[p.latestMIdx].mName;
+  document.getElementById('hdr-ttl').textContent=`Láminas · ${mn} 2026`;
+  const ft=`Fuente: Reporte BI · MDMF_Global_26vs25 · ${p.months[p.latestMIdx].lastDate.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}`;
+  ['ft1','ft2','ft3'].forEach(id=>document.getElementById(id).textContent=ft);
+}
+
+// ── Load ──────────────────────────────────────────────────────────
+document.getElementById('fi').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  document.getElementById('ust').textContent='⏳...';
+  const fr=new FileReader();
+  fr.onload=ev=>{
+    try{render(parseAll(ev.target.result));document.getElementById('ust').textContent='✓';setTimeout(()=>document.getElementById('ust').textContent='',3e3);}
+    catch(err){document.getElementById('ust').textContent='⚠ '+err.message;console.error(err);}
+    document.getElementById('fi').value='';
+  };
+  fr.readAsArrayBuffer(f);
+});
+
+function showSlide(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('sl'+i).classList.toggle('on',i===n);
+    document.getElementById('bs'+i).classList.toggle('on',i===n);
+  });
+}
+
+// Copy as image
+// Map CSS classes → inline styles for reliable cross-app paste
+function applyInlineForCopy(origEl, cloneEl){
+  const cls=Array.from(origEl.classList);
+  const tag=origEl.tagName.toLowerCase();
+  let s='';
+  if(tag==='table'){
+    s='border-collapse:collapse;font-size:10.5px;font-family:Segoe UI,Arial,sans-serif;background:#fff;';
+  } else if(tag==='colgroup'||tag==='col'){
+    // skip
+  } else if(tag==='th'){
+    const inTh0=!!origEl.closest('tr.h1,.th0');
+    const inTh1=!!origEl.closest('tr.h2,.th1');
+    if(cls.includes('canal-hd')){
+      s='background:#1a237e;color:#fff;text-align:left;padding:7px 10px;font-weight:700;font-size:11px;';
+    } else if(inTh0){
+      s='background:#1a237e;color:#fff;text-align:center;font-size:11px;font-weight:700;padding:7px 9px;';
+      if(cls.includes('s2')) s='background:#283593;color:#fff;text-align:center;font-size:11px;font-weight:700;padding:7px 9px;';
+    } else if(inTh1){
+      s='background:#283593;color:#c5cae9;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;text-align:center;padding:5px 8px;';
+    }
+  } else if(tag==='tr'){
+    if(cls.includes('tot')) s='background:#dde4f5;border-top:2px solid #9fa8da;';
+    else if(cls.includes('ps')) s='background:#f5f5f5;border-top:1px dashed #e0e0e0;';
+    else if(cls.includes('sub1')) s='background:#eef1ff;';
+    else if(cls.includes('sub2')) s='background:#f3f5ff;';
+  } else if(tag==='td'){
+    if(cls.includes('cn')){
+      s='font-weight:600;font-size:11px;color:#212121;border-right:1px solid #e0e0e0;text-align:left;padding:4px 10px;';
+      if(cls.includes('tot')) s+='color:#1a237e;font-size:10px;text-transform:uppercase;font-weight:800;';
+      if(cls.includes('sub1')) s+='padding-left:20px;color:#283593;';
+      if(cls.includes('sub2')) s+='padding-left:34px;color:#546e7a;font-size:10px;';
+      if(cls.includes('mu')) s+='color:#546e7a;';
+    } else if(cls.includes('nv')){
+      s='text-align:center;font-family:Courier New,monospace;font-size:10.5px;color:#212121;padding:4px 8px;';
+      if(cls.includes('bl')) s+='color:#0d47a1;font-weight:700;';
+      else if(cls.includes('or')) s+='color:#e65100;font-weight:600;';
+      else if(cls.includes('mu')) s+='color:#546e7a;';
+      else if(cls.includes('gr')) s+='color:#2e7d32;font-weight:700;';
+      else if(cls.includes('dk')) s+='color:#37474f;font-weight:700;';
+    } else if(cls.includes('pct')){
+      s='text-align:center;font-family:Courier New,monospace;font-size:10px;font-weight:700;padding:4px 8px;';
+      if(cls.includes('pos')) s+='background:#e8f5e9;color:#1b5e20;';
+      else if(cls.includes('neg')) s+='background:#ffebee;color:#b71c1c;';
+      else s+='color:#bdbdbd;';
+    } else if(cls.includes('bc')){
+      s='padding:4px 5px;text-align:center;';
+    } else {
+      // generic td
+      s='padding:4px 8px;font-size:10.5px;';
+    }
+  } else if(tag==='span'){
+    if(cls.includes('bx')){
+      s='border-radius:3px;padding:1px 6px;font-size:10px;font-weight:700;font-family:Courier New,monospace;';
+      if(cls.includes('u')) s+='background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7;';
+      else if(cls.includes('d')) s+='background:#ffebee;color:#b71c1c;border:1px solid #ef9a9a;';
+      else s+='background:#f5f5f5;color:#9e9e9e;';
+    }
+  }
+  if(s) cloneEl.setAttribute('style',s);
+  // Recurse
+  for(let i=0;i<origEl.children.length;i++) applyInlineForCopy(origEl.children[i],cloneEl.children[i]);
+}
+
+async function copyTblImg(id){
+  const el=document.getElementById(id);
+  if(!el){document.getElementById('ust').textContent='⚠ No encontrado';return;}
+  document.getElementById('ust').textContent='⏳...';
+  const clone=el.cloneNode(true);
+  clone.querySelectorAll('.tg').forEach(e=>e.remove()); // remove toggle arrows
+  // Apply inline styles via class map
+  applyInlineForCopy(el,clone);
+  const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+body{font-family:Segoe UI,Arial,sans-serif}
+table{border-collapse:collapse;width:auto}
+</style></head><body>${clone.outerHTML}</body></html>`;
+  try{
+    await navigator.clipboard.write([new ClipboardItem({
+      'text/html':new Blob([html],{type:'text/html'}),
+      'text/plain':new Blob([el.innerText||''],{type:'text/plain'})
+    })]);
+    document.getElementById('ust').textContent='✓ Tabla copiada con formato';
+  }catch(e){
+    // Fallback: open in new window
+    const w=window.open('','_blank','width=1200,height=600');
+    if(w){w.document.write(html);w.document.close();document.getElementById('ust').textContent='⚠ Abrió en ventana — Ctrl+A, Ctrl+C';}
+    else document.getElementById('ust').textContent='⚠ '+e.message;
+  }
+  setTimeout(()=>document.getElementById('ust').textContent='',4e3);
+}
+
+async function copyImg(){
+  const el=document.getElementById('twrap');
+  try{const canvas=await html2canvas(el,{scale:2,backgroundColor:'#fff'});
+    canvas.toBlob(async blob=>{
+      try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);document.getElementById('ust').textContent='✓ Imagen';}
+      catch(e){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tabla.png';a.click();document.getElementById('ust').textContent='✓ PNG';}
+      setTimeout(()=>document.getElementById('ust').textContent='',3e3);
+    },'image/png');
+  }catch(e){console.error(e);}
+}
+
+// Copy table (visible only, no toggle arrows)
+async function copyTbl(){
+  const el=document.getElementById('twrap');
+  const clone=el.cloneNode(true);
+  clone.querySelectorAll('.tg').forEach(e=>e.remove());
+  // Embed CSS for proper formatting when pasting
+  const css=Array.from(document.styleSheets).map(ss=>{try{return Array.from(ss.cssRules).map(r=>r.cssText).join('\n');}catch(e){return '';}}).join('\n');
+  const htmlStr=`<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css}</style></head><body><div style="font-family:Segoe UI,Arial,sans-serif;font-size:10.5px">${clone.innerHTML}</div></body></html>`;
+  const txtStr=clone.innerText||clone.textContent;
+  try{
+    await navigator.clipboard.write([new ClipboardItem({
+      'text/html':new Blob([htmlStr],{type:'text/html'}),
+      'text/plain':new Blob([txtStr],{type:'text/plain'})
+    })]);
+    document.getElementById('ust').textContent='✓ Copiado (ambas tablas)';
+  }catch(e){
+    const ta=document.createElement('textarea');ta.value=txtStr;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+    document.getElementById('ust').textContent='✓ Texto copiado';
+  }
+  setTimeout(()=>document.getElementById('ust').textContent='',3e3);
+}
+
+function download(){
+  const s=document.getElementById('ms').textContent;
+  const full=document.documentElement.outerHTML;
+  const src='<!DOCTYPE html>\n'+full.split('<script id="ms">')[0]+'<script id="ms">'+s+'<\/script>\n<\/body>\n<\/html>';
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([src],{type:'text/html'}));
+  a.download=`ventas_canales_${PARSED?PARSED.months[PARSED.latestMIdx].mName.toLowerCase():'laminas'}_2026.html`;
+  a.click();URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>
