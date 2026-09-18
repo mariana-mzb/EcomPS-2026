@@ -112,11 +112,12 @@ td.sep{border-right:3px solid #c5cae9}
     <button class="btn btn-sl on" id="bs1" onclick="showSlide(1)">📋 Tabla</button>
     <button class="btn btn-sl" id="bs2" onclick="showSlide(2)">📊 Gráficas</button>
     <button class="btn btn-sl" id="bs3" onclick="showSlide(3)">📅 Venta Diaria</button>
+    <button class="btn btn-sl" id="bs4" onclick="showSlide(4)">🗓️ Año x Canal</button>
     <label class="btn btn-ul"><input type="file" id="fi" accept=".xlsx,.xls">⬆ Actualizar</label>
     <button class="btn btn-cp" onclick="copyImg()">🖼 Imagen</button>
     <button class="btn btn-cp" onclick="copyTbl()">📋 Copiar tabla</button>
     <button class="btn btn-dl" onclick="download()">⬇ HTML</button>
-    <span id="ust">✓</span>
+    <span id="ust"></span>
   </div>
 </div>
 
@@ -456,6 +457,86 @@ td.sep{border-right:3px solid #c5cae9}
   </div>
 
   <div class="ft" id="ft3">Fuente: Reporte BI · MDMF_Global_26vs25 · jueves, 17 de septiembre de 2026</div>
+</div>
+
+<!-- SLIDE 4: AÑO x CANAL -->
+<div class="slide" id="sl4">
+  <div class="cfw" style="margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px">
+      <div>
+        <div class="ey3" id="yxc-ey">Venta Meli Drop · 2026 vs 2025</div>
+        <div class="ct" id="yxc-ct" style="color:#1a237e">Venta real por mes (Mismo Día)</div>
+      </div>
+      <select id="yxc-chan-sel" onchange="setYxcChannel(this.value)" style="font-family:inherit;font-size:11px;font-weight:700;color:#1a237e;border:1px solid #c5cae9;background:#e8eaf6;border-radius:10px;padding:5px 8px;cursor:pointer">
+        <option value="Total">Total Ecommerce</option>
+        <option value="Web/APP">Web/APP</option>
+        <option value="Afiliación">Afiliación</option>
+        <option value="MKP">MKP</option>
+        <optgroup label="Meli">
+          <option value="Meli">Meli (completo)</option>
+          <option value="Meli Drop">Meli Drop</option>
+          <option value="Meli Full">Meli Full</option>
+        </optgroup>
+        <optgroup label="Amazon">
+          <option value="Amazon">Amazon (completo)</option>
+          <option value="Amazon Drop">Amazon Drop</option>
+          <option value="Amazon Full">Amazon Full</option>
+        </optgroup>
+        <option value="TikTok">TikTok</option>
+        <option value="Shein">Shein</option>
+        <option value="TMK/WA">TMK/WA</option>
+        <option value="Entrega Tda">Entrega Tda</option>
+      </select>
+    </div>
+    <div style="height:200px"><canvas id="yxcchart" style="box-sizing: border-box; display: block; height: 200px; width: 1198px;" width="1798" height="300"></canvas></div>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
+    <span style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#546e7a;font-weight:700">Comparativo vs 2025:</span>
+    <button class="stab on" id="md-btn4" onclick="setCmp('md')">Mismo Día</button>
+    <button class="stab" id="mf-btn4" onclick="setCmp('mf')">Misma Fecha</button>
+    <span style="font-size:11px;color:#9e9e9e;margin-left:8px">por mes y canal · MKP expandible a Meli/Amazon/TikTok/Shein</span>
+  </div>
+  <div style="margin-bottom:4px;display:flex;justify-content:space-between;align-items:center">
+    <div class="ct" style="color:#1a237e">% Crecimiento vs 2025</div>
+    <button onclick="copyTblImg('tbl-yxc-pct')" style="padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid #c5cae9;background:#e8eaf6;color:#1a237e;font-family:inherit">📷 Copiar</button>
+  </div>
+  <div style="overflow-x:auto;margin-bottom:20px"><div id="tbl-yxc-pct" style="background:#fff"><table class="ttbl"><colgroup><col style="width:150px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"></colgroup><thead><tr class="th1">
+<th class="canal-hd" style="position:sticky;left:0;z-index:2;background:#1a237e">Canal</th>
+<th>ENE</th><th>FEB</th><th>MAR</th><th>ABR</th><th>MAY</th><th>JUN</th><th>JUL</th><th>AGO</th><th>SEP *</th>
+</tr></thead><tbody><tr class="">
+<td class="cn " style="position:sticky;left:0;background:#fff;z-index:1">Web/APP</td>
+<td class="pct pos">+18.1%</td><td class="pct pos">+21.9%</td><td class="pct pos">+37.6%</td><td class="pct pos">+30.9%</td><td class="pct pos">+20.9%</td><td class="pct pos">+19.8%</td><td class="pct neg">-2.3%</td><td class="pct pos">+14.4%</td><td class="pct pos">+16.4%</td></tr><tr class="">
+<td class="cn " style="position:sticky;left:0;background:#fff;z-index:1">Afiliación</td>
+<td class="pct pos">+16.8%</td><td class="pct pos">+19.1%</td><td class="pct pos">+22.3%</td><td class="pct pos">+21.6%</td><td class="pct pos">+9.6%</td><td class="pct neg">-10.8%</td><td class="pct neg">-10.7%</td><td class="pct pos">+42.9%</td><td class="pct pos">+68.8%</td></tr><tr class="">
+<td class="cn " style="position:sticky;left:0;background:#fff;z-index:1"><span class="tg" onclick="tExp('mkp')">▶</span>MKP</td>
+<td class="pct pos">+14.4%</td><td class="pct pos">+31.3%</td><td class="pct pos">+4.1%</td><td class="pct neg">-3.7%</td><td class="pct neg">-10.7%</td><td class="pct neg">-19.4%</td><td class="pct neg">-40.7%</td><td class="pct neg">-22.7%</td><td class="pct pos">+2.7%</td></tr><tr class="">
+<td class="cn " style="position:sticky;left:0;background:#fff;z-index:1">TMK/WA</td>
+<td class="pct neg">-42.2%</td><td class="pct neg">-52.7%</td><td class="pct neg">-36.1%</td><td class="pct neg">-44.4%</td><td class="pct neg">-47.9%</td><td class="pct neg">-34.0%</td><td class="pct neg">-54.4%</td><td class="pct neg">-13.9%</td><td class="pct neg">-3.7%</td></tr><tr class="">
+<td class="cn " style="position:sticky;left:0;background:#fff;z-index:1">Entrega Tda</td>
+<td class="pct pos">+0.8%</td><td class="pct pos">+25.0%</td><td class="pct pos">+51.5%</td><td class="pct pos">+14.4%</td><td class="pct neg">-11.9%</td><td class="pct neg">-14.7%</td><td class="pct neg">-42.5%</td><td class="pct neg">-19.0%</td><td class="pct pos">+12.4%</td></tr><tr class="tot">
+<td class="cn tot" style="position:sticky;left:0;background:#dde4f5;z-index:1">Total</td>
+<td class="pct pos">+15.9%</td><td class="pct pos">+21.8%</td><td class="pct pos">+30.5%</td><td class="pct pos">+23.2%</td><td class="pct pos">+12.2%</td><td class="pct pos">+8.4%</td><td class="pct neg">-11.9%</td><td class="pct pos">+5.8%</td><td class="pct pos">+13.7%</td></tr></tbody></table></div></div>
+  <div style="margin-bottom:4px;display:flex;justify-content:space-between;align-items:center">
+    <div class="ct" style="color:#1a237e">$ Ventas</div>
+    <button onclick="copyTblImg('tbl-yxc-usd')" style="padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid #c5cae9;background:#e8eaf6;color:#1a237e;font-family:inherit">📷 Copiar</button>
+  </div>
+  <div style="overflow-x:auto"><div id="tbl-yxc-usd" style="background:#fff"><table class="ttbl"><colgroup><col style="width:150px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"><col style="width:78px"></colgroup><thead><tr class="th1">
+<th class="canal-hd" style="position:sticky;left:0;z-index:2;background:#1a237e">Canal</th>
+<th>ENE</th><th>FEB</th><th>MAR</th><th>ABR</th><th>MAY</th><th>JUN</th><th>JUL</th><th>AGO</th><th>SEP *</th>
+</tr></thead><tbody><tr class="">
+<td class="cn " style="position:sticky;left:0;background:#fff;z-index:1">Web/APP</td>
+<td class="nv bl">$76.5M</td><td class="nv bl">$76.6M</td><td class="nv bl">$97.5M</td><td class="nv bl">$84.9M</td><td class="nv bl">$94.3M</td><td class="nv bl">$97.2M</td><td class="nv bl">$83.9M</td><td class="nv bl">$124.1M</td><td class="nv bl">$54.7M</td></tr><tr class="">
+<td class="cn " style="position:sticky;left:0;background:#fff;z-index:1">Afiliación</td>
+<td class="nv bl">$859.5K</td><td class="nv bl">$687.5K</td><td class="nv bl">$768.9K</td><td class="nv bl">$653.6K</td><td class="nv bl">$756.4K</td><td class="nv bl">$930.2K</td><td class="nv bl">$1.2M</td><td class="nv bl">$1.8M</td><td class="nv bl">$820.8K</td></tr><tr class="">
+<td class="cn " style="position:sticky;left:0;background:#fff;z-index:1"><span class="tg" onclick="tExp('mkp')">▶</span>MKP</td>
+<td class="nv bl">$19.8M</td><td class="nv bl">$13.9M</td><td class="nv bl">$17.5M</td><td class="nv bl">$13.6M</td><td class="nv bl">$20.7M</td><td class="nv bl">$22.6M</td><td class="nv bl">$14.0M</td><td class="nv bl">$22.7M</td><td class="nv bl">$13.4M</td></tr><tr class="">
+<td class="cn " style="position:sticky;left:0;background:#fff;z-index:1">TMK/WA</td>
+<td class="nv bl">$901.4K</td><td class="nv bl">$733.5K</td><td class="nv bl">$981.8K</td><td class="nv bl">$860.0K</td><td class="nv bl">$718.9K</td><td class="nv bl">$858.3K</td><td class="nv bl">$536.9K</td><td class="nv bl">$1.2M</td><td class="nv bl">$579.0K</td></tr><tr class="">
+<td class="cn " style="position:sticky;left:0;background:#fff;z-index:1">Entrega Tda</td>
+<td class="nv bl">$1.8M</td><td class="nv bl">$2.2M</td><td class="nv bl">$2.9M</td><td class="nv bl">$2.3M</td><td class="nv bl">$2.5M</td><td class="nv bl">$2.7M</td><td class="nv bl">$1.9M</td><td class="nv bl">$3.8M</td><td class="nv bl">$1.8M</td></tr><tr class="tot">
+<td class="cn tot" style="position:sticky;left:0;background:#dde4f5;z-index:1">Total</td>
+<td class="nv bl">$99.8M</td><td class="nv bl">$94.0M</td><td class="nv bl">$119.6M</td><td class="nv bl">$102.3M</td><td class="nv bl">$118.9M</td><td class="nv bl">$124.3M</td><td class="nv bl">$101.5M</td><td class="nv bl">$153.5M</td><td class="nv bl">$71.3M</td></tr></tbody></table></div></div>
+  <div class="ft" id="ft4">Fuente: Reporte BI · MDMF_Global_26vs25 · % vs 2025 y venta real $ 2026 por mes (Mismo Día, excepto meses cerrados: siempre Misma Fecha) · último mes: Sep (en curso, marcado con *)</div>
 </div>
 
 <script id="ms">
@@ -1031,7 +1112,7 @@ function renderTable(d){
 
 function setCmp(mode){
   CMP=mode;
-  ['md-btn','mf-btn','md-btn3','mf-btn3'].forEach(id=>{
+  ['md-btn','mf-btn','md-btn3','mf-btn3','md-btn4','mf-btn4'].forEach(id=>{
     const el=document.getElementById(id); if(!el) return;
     el.classList.toggle('on',(id.startsWith('md')?'md':'mf')===mode);
   });
@@ -1039,6 +1120,7 @@ function setCmp(mode){
     renderTable(PARSED.months[SEL]);
     renderDailyFull();
     if(DAILY_VIEW==='dxd') renderDayByDay(DXD_SEL);
+    if(document.getElementById('sl4').classList.contains('on')) renderYearByChannel();
   }
 }
 
@@ -1049,7 +1131,136 @@ function tExp(key){
   if(PARSED){
     renderTable(PARSED.months[SEL]);renderDailyTable();
     if(DAILY_VIEW==='dxd') renderDayByDay(DXD_SEL);
+    if(document.getElementById('sl4').classList.contains('on')) renderYearByChannel();
   }
+}
+
+// ── Año x Canal: un renglón por canal y una columna por cada mes ya
+// transcurrido del año (PARSED.months solo trae meses reales, nunca meses
+// futuros vacíos). Reusa exactamente los mismos campos ya calculados por mes
+// (channels[].mtdR/mtdVs25(_md), mkpSubs[].mtdReal/mtdVs25, total.mtdR/mtdVs25)
+// que ya alimentan la tabla Mes — sin recomputar nada nuevo — y el mismo
+// toggle Mismo Día/Misma Fecha + regla de mes cerrado (forceMF) que el resto
+// del dashboard, para que nunca se desalinee con las otras vistas.
+// Ambas tablas (% Crecimiento y $ Ventas) se muestran siempre juntas, una
+// debajo de la otra — Mariana pidió no tener que alternar entre las dos.
+function yxcCell(v,metric){
+  if(v==null||isNaN(v)) return `<td class="${metric==='usd'?'nv':'pct na'}">—</td>`;
+  return metric==='usd' ? `<td class="nv bl">${fM(v)}</td>` : `<td class="pct ${v>=0?'pos':'neg'}">${fP(v)}</td>`;
+}
+function yxcRow(label,getVal,metric,opts={}){
+  const {expKey=null,indent=false,indent2=false,bold=false}=opts;
+  const tog=expKey?`<span class="tg" onclick="tExp('${expKey}')">${EXP[expKey]?'▼':'▶'}</span>`:'';
+  const cls=bold?'tot':(indent2?'sub2':(indent?'sub1':''));
+  const bg=bold?'#dde4f5':(indent2?'#f3f5ff':(indent?'#eef1ff':'#fff'));
+  return `<tr class="${cls}">
+<td class="cn ${cls}" style="position:sticky;left:0;background:${bg};z-index:1">${tog}${label}</td>
+${PARSED.months.map(m=>yxcCell(getVal(m),metric)).join('')}</tr>`;
+}
+function yxcBuildTable(months,metric){
+  const chOf=(m,name)=>m.channels.find(c=>c.name===name);
+  const subOf=(m,name)=>m.mkpSubs.find(s=>s.name===name);
+  const childOf=(m,parentName,childName)=>{const s=subOf(m,parentName); if(!s||!s.children) return null; return s.children.find(c=>c.name===childName);};
+  const chVal=(m,name)=>{const c=chOf(m,name); return metric==='usd'?c.mtdR:vs25(c,'mtdVs25',m.isClosed);};
+  const subVal=(m,name)=>{const s=subOf(m,name); if(!s) return null; return metric==='usd'?s.mtdReal:s.mtdVs25;};
+  const childVal=(m,parentName,childName)=>{const c=childOf(m,parentName,childName); if(!c) return null; return metric==='usd'?c.mtdReal:c.mtdVs25;};
+  const totVal=m=>metric==='usd'?m.total.mtdR:vs25(m.total,'mtdVs25',m.isClosed);
+
+  const cg=`<colgroup><col style="width:150px">${months.map(()=>'<col style="width:78px">').join('')}</colgroup>`;
+  let html=`<table class="ttbl">${cg}<thead><tr class="th1">
+<th class="canal-hd" style="position:sticky;left:0;z-index:2;background:#1a237e">Canal</th>
+${months.map(m=>`<th>${m.mName.slice(0,3).toUpperCase()}${m.isClosed?'':' *'}</th>`).join('')}
+</tr></thead><tbody>`;
+
+  html+=yxcRow('Web/APP', m=>chVal(m,'Web/APP'), metric);
+  html+=yxcRow('Afiliación', m=>chVal(m,'Afiliación'), metric);
+  html+=yxcRow('MKP', m=>chVal(m,'MKP'), metric, {expKey:'mkp'});
+  if(EXP.mkp){
+    // Meli y Amazon a su vez expandibles a Drop/Full — mismo comportamiento
+    // que ya tenían la tabla Mes y YTD, faltaba solo aquí (Mariana lo notó:
+    // "no se puede abrir meli drop full, igual amazon").
+    ['Meli','Amazon','TikTok','Shein'].forEach(subName=>{
+      const dfKey=subName==='Meli'?'meli':(subName==='Amazon'?'amazon':null);
+      html+=yxcRow(subName, m=>subVal(m,subName), metric, {indent:true, expKey:dfKey});
+      if(dfKey&&EXP[dfKey]){
+        [`${subName} Drop`,`${subName} Full`].forEach(childName=>{
+          html+=yxcRow(childName, m=>childVal(m,subName,childName), metric, {indent2:true});
+        });
+      }
+    });
+  }
+  html+=yxcRow('TMK/WA', m=>chVal(m,'TMK/WA'), metric);
+  html+=yxcRow('Entrega Tda', m=>chVal(m,'Entrega Tda'), metric);
+  html+=yxcRow('Total', m=>totVal(m), metric, {bold:true});
+  html+='</tbody></table>';
+  return html;
+}
+function renderYearByChannel(){
+  if(!PARSED) return;
+  const months=PARSED.months;
+
+  document.getElementById('tbl-yxc-pct').innerHTML=yxcBuildTable(months,'pct');
+  document.getElementById('tbl-yxc-usd').innerHTML=yxcBuildTable(months,'usd');
+
+  const last=months[months.length-1];
+  document.getElementById('ft4').textContent=`Fuente: Reporte BI · MDMF_Global_26vs25 · % vs 2025 y venta real $ 2026 por mes (${CMP==='md'?'Mismo Día':'Misma Fecha'}, excepto meses cerrados: siempre Misma Fecha) · último mes: ${last.mName}${last.isClosed?' (cerrado)':' (en curso, marcado con *)'}`;
+
+  renderYxcChart(months);
+}
+
+// Línea de venta mes a mes, 2026 vs 2025 (misma base de comparación que el
+// resto del dashboard: respeta Mismo Día/Misma Fecha y fuerza Misma Fecha en
+// meses cerrados). Usa get25() sobre el canal ya calculado por mes, igual que
+// las tablas — no recalcula nada aparte. YXC_CHANNEL elige qué serie mostrar
+// (Total o un canal/sub-canal individual) — Mariana pidió poder ver el
+// comportamiento de la gráfica por canal, no solo el Total.
+var YXC_CHART=null, YXC_CHANNEL='Total';
+function setYxcChannel(name){
+  YXC_CHANNEL=name;
+  if(PARSED) renderYxcChart(PARSED.months);
+}
+function yxcSeriesFor(months,name){
+  const chOf=(m,n)=>m.channels.find(c=>c.name===n);
+  const subOf=(m,n)=>m.mkpSubs.find(s=>s.name===n);
+  // Meli/Amazon Drop/Full: hijos de mkpSubs[Meli|Amazon].children — mismo dato
+  // que ya usan las tablas expandidas, así Mariana puede ver Meli/Amazon
+  // completo o segmentado también en la gráfica, no solo en la tabla.
+  const dropFullOf=(m,parentName,childName)=>{
+    const s=subOf(m,parentName); if(!s||!s.children) return null;
+    return s.children.find(c=>c.name===childName);
+  };
+  if(name==='Total') return months.map(m=>({r26:m.total.mtdR,r25:get25(m.total,'mtd25',m.isClosed)}));
+  if(['Meli Drop','Meli Full','Amazon Drop','Amazon Full'].includes(name)){
+    const parentName=name.startsWith('Meli')?'Meli':'Amazon';
+    return months.map(m=>{
+      const c=dropFullOf(m,parentName,name); return c?{r26:c.mtdReal,r25:get25(c,'mtd25',m.isClosed)}:{r26:null,r25:null};
+    });
+  }
+  if(['Meli','Amazon','TikTok','Shein'].includes(name)) return months.map(m=>{
+    const s=subOf(m,name); return s?{r26:s.mtdReal,r25:get25(s,'mtd25',m.isClosed)}:{r26:null,r25:null};
+  });
+  return months.map(m=>{
+    const c=chOf(m,name); return c?{r26:c.mtdR,r25:get25(c,'mtd25',m.isClosed)}:{r26:null,r25:null};
+  });
+}
+function renderYxcChart(months){
+  const labels=months.map(m=>m.mName.slice(0,3));
+  const series=yxcSeriesFor(months,YXC_CHANNEL);
+  const real26=series.map(s=>s.r26);
+  const real25=series.map(s=>s.r25);
+  document.getElementById('yxc-ey').textContent=`Venta ${YXC_CHANNEL==='Total'?'Total':YXC_CHANNEL} · 2026 vs 2025`;
+  document.getElementById('yxc-ct').textContent=`Venta real por mes (${CMP==='md'?'Mismo Día':'Misma Fecha'})`;
+  if(YXC_CHART) YXC_CHART.destroy();
+  YXC_CHART=new Chart(document.getElementById('yxcchart'),{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'2026',data:real26,borderColor:'#1a237e',backgroundColor:'#1a237e',pointRadius:3,tension:.25,borderWidth:2.5},
+      {label:'2025',data:real25,borderColor:'#b0bec5',backgroundColor:'#b0bec5',pointRadius:3,tension:.25,borderWidth:2.5,borderDash:[5,3]},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{font:{size:10},boxWidth:12}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fM(c.raw)}`}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{beginAtZero:true,ticks:{font:{size:9.5},callback:v=>fM(v)},grid:{color:'#f0f0f0'}}}}
+  });
 }
 
 // ── Charts ──────────────────────────────────────────────────────────
@@ -1399,6 +1610,7 @@ function render(p){
   buildMonthBar(); selectMonth(SEL);
   buildDatePicker(); renderDailyFull();
   buildMonthBarDxd(); renderDayByDay(DXD_SEL);
+  renderYearByChannel();
   const mn=p.months[p.latestMIdx].mName;
   document.getElementById('hdr-ttl').textContent=`Láminas · ${mn} 2026`;
   const ft=`Fuente: Reporte BI · MDMF_Global_26vs25 · ${p.months[p.latestMIdx].lastDate.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}`;
@@ -1451,10 +1663,11 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 function showSlide(n){
-  [1,2,3].forEach(i=>{
+  [1,2,3,4].forEach(i=>{
     document.getElementById('sl'+i).classList.toggle('on',i===n);
     document.getElementById('bs'+i).classList.toggle('on',i===n);
   });
+  if(n===4&&PARSED) renderYearByChannel();
 }
 
 // Copy as image
