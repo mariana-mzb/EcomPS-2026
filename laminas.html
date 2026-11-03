@@ -105,6 +105,16 @@ td.sep{border-right:3px solid #c5cae9}
 .kchip .kval.sm{font-size:13px;font-weight:600}
 .kchip .kdiv{height:1px;background:#f0f0f0;margin:4px 0}
 .kchip .kb{font-size:11.5px;font-weight:700;font-family:'Courier New',monospace;margin-left:4px}
+.gtbl{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:10px}
+.gtbl th{background:#283593;color:#fff;padding:5px 6px;font-size:10px;text-transform:uppercase;letter-spacing:.4px;text-align:right;font-weight:600;white-space:nowrap}
+.gtbl th:first-child{text-align:left}
+.gtbl th.g1{background:#1a237e;text-align:center;letter-spacing:1px}
+.gtbl td{padding:5px 6px;text-align:right;border-bottom:1px solid rgba(0,0,0,.06);font-family:'Courier New',monospace;white-space:nowrap}
+.gtbl td:first-child{text-align:left;font-family:inherit;font-weight:700;color:#263238}
+.gtbl tr.tot td{background:#dde4f5;font-weight:800;border-top:2px solid #9fa8da}
+.gtbl td.up{color:#1b5e20}.gtbl td.dn{color:#b71c1c}.gtbl td.pc{font-weight:700}
+.gtbl td.pc.up{background:#e8f5e9}.gtbl td.pc.dn{background:#ffebee}
+.gwrap{overflow-x:auto}
 </style>
 </head>
 <body>
@@ -309,34 +319,37 @@ td.sep{border-right:3px solid #c5cae9}
 
 <!-- SLIDE 2: CHARTS -->
 <div class="slide" id="sl2">
+  <div class="mbar" id="gmbar" style="display:flex">
+    <span class="mbar-lbl">Período</span>
+    <div id="gmbtn" style="display:flex;gap:4px;flex-wrap:wrap"></div>
+  </div>
   <div class="cgrid">
     <div class="cc" style="border-color:#1a237e">
-      <div class="ey3">Mes en Curso MTD</div>
-      <div class="ct" id="ctjul" style="color:#1a237e">Nov MTD — Real vs 2025 vs Meta</div>
-      <div style="height:185px"><canvas id="cjul" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+      <div class="ey3" id="gey1">MTD</div>
+      <div class="ct" id="ctjul" style="color:#1a237e">MTD — Real vs 2025 vs Meta</div>
+      <div style="height:230px"><canvas id="cjul"></canvas></div>
+      <div id="gtb1"></div>
     </div>
     <div class="cc" style="border-color:#1565c0">
-      <div class="ey3">YTD 2026</div>
-      <div class="ct" style="color:#1565c0">Real vs 2025 vs Meta</div>
-      <div style="height:185px"><canvas id="cytd" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+      <div class="ey3" id="gey2">YTD 2026</div>
+      <div class="ct" id="ctytd" style="color:#1565c0">YTD — Real vs 2025 vs Meta</div>
+      <div style="height:230px"><canvas id="cytd"></canvas></div>
+      <div id="gtb2"></div>
     </div>
   </div>
-  <div class="cfw">
+  <div class="cfw" id="gpm" style="margin-bottom:11px">
+    <div class="ey3" id="gey4">Proyección del mes</div>
+    <div class="ct" id="gct4" style="color:#00695c">Proyección del mes vs Meta del mes</div>
+    <div style="height:210px"><canvas id="cpm"></canvas></div>
+    <div id="gtb4"></div>
+  </div>
+  <div class="cfw" id="gfy">
     <div class="ey3">Proyección FY 2026</div>
     <div class="ct" style="color:#37474f">FY Proyectado vs 2025 vs Meta</div>
-    <div style="height:165px"><canvas id="cfy" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+    <div style="height:190px"><canvas id="cfy"></canvas></div>
+    <div id="gtb3"></div>
   </div>
-  <div id="kpis">
-<div class="kpi-sec"><div class="kpi-stitle">Nov MTD</div><div class="krow">
-<div class="kchip"><div class="ktitle">Real Nov 2026</div><div class="krow2"><span class="klbl">Real 2026</span><span class="kval" style="color:#1a237e">$7.7M</span></div><div class="kdiv"></div><div class="krow2"><span class="klbl">Real 2025</span><span class="kval sm" style="color:#546e7a">$6.0M</span></div><div class="krow2"><span class="klbl">Var YoY</span><span class="kval sm" style="color:#212121"></span><span class="kb" style="color:#1b5e20">+28.4%</span></div></div>
-<div class="kchip"><div class="ktitle">Meta MTD</div><div class="krow2"><span class="klbl">Meta</span><span class="kval" style="color:#e65100">$7.1M</span></div><div class="kdiv"></div><div class="krow2"><span class="klbl">Real vs Meta</span><span class="kval sm" style="color:#212121"></span><span class="kb" style="color:#1b5e20">+7.5%</span></div></div>
-</div></div>
-<div class="kpi-sec"><div class="kpi-stitle">Acumulado del Año</div><div class="krow">
-<div class="kchip"><div class="ktitle">YTD vs 2025</div><div class="krow2"><span class="klbl">YTD 2026</span><span class="kval" style="color:#1565c0">$1,300.9M</span></div><div class="kdiv"></div><div class="krow2"><span class="klbl">YTD 2025</span><span class="kval sm" style="color:#546e7a">$1,162.7M</span></div><div class="krow2"><span class="klbl">Var YoY</span><span class="kval sm" style="color:#212121"></span><span class="kb" style="color:#1b5e20">+11.9%</span></div></div>
-<div class="kchip"><div class="ktitle">YTD vs Meta</div><div class="krow2"><span class="klbl">YTD 2026</span><span class="kval" style="color:#1565c0">$1,300.9M</span></div><div class="kdiv"></div><div class="krow2"><span class="klbl">Meta YTD</span><span class="kval sm" style="color:#e65100">$1,401.0M</span></div><div class="krow2"><span class="klbl">Cumpl.</span><span class="kval sm" style="color:#212121"></span><span class="kb" style="color:#b71c1c">-7.1%</span></div></div>
-<div class="kchip"><div class="ktitle">Proyección FY</div><div class="krow2"><span class="klbl">Proy FY</span><span class="kval" style="color:#37474f">$1,732.6M</span></div><div class="kdiv"></div><div class="krow2"><span class="klbl">Meta FY</span><span class="kval sm" style="color:#e65100">$1,862.0M</span><span class="kb" style="color:#b71c1c">-6.9%</span></div><div class="krow2"><span class="klbl">2025</span><span class="kval sm" style="color:#546e7a">$1,530.8M</span><span class="kb" style="color:#1b5e20">+13.2%</span></div></div>
-</div></div></div>
-  <div class="ft" id="ft2">Fuente: Reporte BI · MDMF_Global_26vs25 · lunes, 2 de noviembre de 2026 · Meses cerrados y 2025 con venta mensual ajustada</div>
+  <div class="ft" id="ft2"></div>
 </div>
 
 <!-- SLIDE 3: DAILY -->
@@ -1456,6 +1469,7 @@ function setCmp(mode){
   syncCmpButtons();
   if(PARSED){
     renderTable(PARSED.months[SEL]);
+    renderCharts();
     renderDailyFull();
     if(DAILY_VIEW==='dxd') renderDayByDay(DXD_SEL);
     if(document.getElementById('sl4').classList.contains('on')) renderYearByChannel();
@@ -1613,40 +1627,97 @@ function renderYxcChart(months){
 }
 
 // ── Charts ──────────────────────────────────────────────────────────
-function renderCharts(d){
-  const chs=d.channels.filter(c=>c.name!=='Afiliación');
-  const names=chs.map(c=>c.name);
-  const copts={responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{labels:{font:{size:9},boxWidth:10}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fM(c.raw)}`}}},
-    scales:{x:{grid:{display:false},ticks:{font:{size:9.5}}},y:{ticks:{font:{size:9.5},callback:v=>fM(v)},grid:{color:'#f0f0f0'}}}};
-  document.getElementById('ctjul').textContent=`${d.mName} MTD — Real vs 2025 vs Meta`;
-  if(CJ1)CJ1.destroy();
-  CJ1=new Chart(document.getElementById('cjul'),{type:'bar',data:{labels:names,datasets:[
-    {label:'2025',data:chs.map(c=>c.mtd25),backgroundColor:'#b0bec5',borderRadius:3},
-    {label:'Meta',data:chs.map(c=>c.mtdMeta),backgroundColor:'rgba(230,81,0,.65)',borderRadius:3},
-    {label:'Real',data:chs.map(c=>c.mtdR),backgroundColor:'#1a237e',borderRadius:3}]},options:copts});
-  if(CJ2)CJ2.destroy();
-  CJ2=new Chart(document.getElementById('cytd'),{type:'bar',data:{labels:names,datasets:[
-    {label:'YTD 2025',data:chs.map(c=>c.ytd25),backgroundColor:'#b0bec5',borderRadius:3},
-    {label:'Meta YTD',data:chs.map(c=>c.ytdM),backgroundColor:'rgba(230,81,0,.65)',borderRadius:3},
-    {label:'Real YTD',data:chs.map(c=>c.ytdR),backgroundColor:'#1565c0',borderRadius:3}]},options:copts});
-  if(CJ3)CJ3.destroy();
-  CJ3=new Chart(document.getElementById('cfy'),{type:'bar',data:{labels:names,datasets:[
-    {label:'2025',data:chs.map(c=>c.fy25),backgroundColor:'#b0bec5',borderRadius:3},
-    {label:'Meta FY',data:chs.map(c=>c.fyM),backgroundColor:'rgba(230,81,0,.65)',borderRadius:3},
-    {label:'Proy FY',data:chs.map(c=>c.fyP),backgroundColor:'#37474f',borderRadius:3}]},options:copts});
-  const tot=d.total,mn=d.mName;
-  function chip(title,rows){return `<div class="kchip"><div class="ktitle">${title}</div>${rows.map(row=>row.div?'<div class="kdiv"></div>':`<div class="krow2"><span class="klbl">${row.lbl}</span><span class="${row.big?'kval':'kval sm'}" style="color:${row.color||'#212121'}">${row.val}</span>${row.p!=null?`<span class="kb" style="color:${pctCol(row.p)}">${fP(row.p)}</span>`:''}</div>`).join('')}</div>`;}
-  document.getElementById('kpis').innerHTML=`
-<div class="kpi-sec"><div class="kpi-stitle">${mn} MTD</div><div class="krow">
-${chip(`Real ${mn} 2026`,[{lbl:'Real 2026',val:fM(tot.mtdR),color:'#1a237e',big:true},{div:true},{lbl:'Real 2025',val:fM(tot.mtd25),color:'#546e7a'},{lbl:'Var YoY',val:'',p:tot.mtdVs25}])}
-${chip('Meta MTD',[{lbl:'Meta',val:fM(tot.mtdMeta),color:'#e65100',big:true},{div:true},{lbl:'Real vs Meta',val:'',p:tot.mtdVsM}])}
-</div></div>
-<div class="kpi-sec"><div class="kpi-stitle">Acumulado del Año</div><div class="krow">
-${chip('YTD vs 2025',[{lbl:'YTD 2026',val:fM(tot.ytdR),color:'#1565c0',big:true},{div:true},{lbl:'YTD 2025',val:fM(tot.ytd25),color:'#546e7a'},{lbl:'Var YoY',val:'',p:tot.ytdVs25}])}
-${chip('YTD vs Meta',[{lbl:'YTD 2026',val:fM(tot.ytdR),color:'#1565c0',big:true},{div:true},{lbl:'Meta YTD',val:fM(tot.ytdM),color:'#e65100'},{lbl:'Cumpl.',val:'',p:tot.ytdVsM}])}
-${chip('Proyección FY',[{lbl:'Proy FY',val:fM(tot.fyP),color:'#37474f',big:true},{div:true},{lbl:'Meta FY',val:fM(tot.fyM),color:'#e65100',p:tot.fyVsM},{lbl:'2025',val:fM(tot.fy25),color:'#546e7a',p:tot.fyVs25}])}
-</div></div>`;
+// ── Pestaña Gráficas: Digital vs MKP vs Total (MTD / YTD / FY), mes seleccionable ──
+var GSEL=null, CJ4=null;
+// Digital = todo lo que no es MKP (Web/APP, Afiliación, TMK/WA, Entrega Tda, Pagos en Tienda, Otros). Total = Digital + MKP (= d.total)
+const GGROUPS=[
+  {name:'Digital',tip:'Web/APP, Afiliación, TMK/WA, Entrega Tda, Pagos en Tienda y Otros',test:c=>c.name!=='MKP'},
+  {name:'MKP',tip:'Mercado Libre, Amazon, TikTok y Shein',test:c=>c.name==='MKP'}];
+function gAgg(d,F){
+  // F={R,b,M}: campos Real / base 2025 / Meta. La base 2025 respeta Mismo Día / Misma Fecha (mes cerrado siempre Misma Fecha)
+  const out=GGROUPS.map(g=>{
+    const cs=d.channels.filter(g.test); let R=0,b=null,M=null;
+    cs.forEach(c=>{ R+=c[F.R]||0;
+      const v=vs25(c,F.b,d.isClosed); if(v!=null) b=(b||0)+v;
+      if(c[F.M]!=null&&c[F.M]!==0) M=(M||0)+c[F.M]; });
+    return {name:g.name,tip:g.tip,R,b,M};
+  });
+  const tot={name:'Total',tip:'Digital + MKP',R:0,b:null,M:null,isTot:true};
+  out.forEach(r=>{ tot.R+=r.R; if(r.b!=null) tot.b=(tot.b||0)+r.b; if(r.M!=null) tot.M=(tot.M||0)+r.M; });
+  // El Total sale tal cual de d.total (misma cifra que la pestaña Tabla; en la proyección FY la meta/proy. total no es la suma de canales)
+  const T=d.total; if(T&&T[F.R]!=null){ tot.R=T[F.R]; const tb=vs25(T,F.b,d.isClosed); tot.b=tb!=null?tb:tot.b; if(T[F.M]!=null) tot.M=T[F.M]; }
+  return out.concat([tot]);
+}
+function fD(v){return v==null||isNaN(v)?'—':(v>0?'+':'')+fM(v);}
+function gPct(a,b){return b!=null&&Math.abs(b)>1?(a-b)/Math.abs(b)*100:null;}
+function gTable(rows,lbl25,lblM,lblR,tag){
+  const cls=v=>v==null?'':(v>=0?'up':'dn');
+  const th=`<th>${lbl25}</th><th>${lblM}</th><th>${lblR}</th><th>Δ$ vs 25</th><th>% vs 25</th><th>Δ$ vs Meta</th><th>% vs Meta</th>`;
+  let h=`<div class="gwrap"><table class="gtbl" id="${tag}"><thead><tr><th>Grupo</th>${th}</tr></thead><tbody>`;
+  rows.forEach(r=>{
+    const d25=r.b!=null?r.R-r.b:null, dM=r.M!=null?r.R-r.M:null, p25=gPct(r.R,r.b), pM=gPct(r.R,r.M);
+    h+=`<tr class="${r.isTot?'tot':''}"><td title="${r.tip}">${r.name}</td><td>${r.b!=null?fM(r.b):'—'}</td><td>${r.M!=null?fM(r.M):'—'}</td><td>${fM(r.R)}</td>`+
+       `<td class="${cls(d25)}">${fD(d25)}</td><td class="pc ${cls(p25)}">${p25==null?'—':fP(p25)}</td>`+
+       `<td class="${cls(dM)}">${fD(dM)}</td><td class="pc ${cls(pM)}">${pM==null?'—':fP(pM)}</td></tr>`;
+  });
+  return h+'</tbody></table></div>';
+}
+// Etiquetas de monto sobre cada barra
+const GVAL_PLUGIN={id:'gval',afterDatasetsDraw(ch){
+  const ctx=ch.ctx; ctx.save(); ctx.font='600 9px Courier New'; ctx.textAlign='center'; ctx.fillStyle='#37474f';
+  ch.data.datasets.forEach((ds,i)=>{ ch.getDatasetMeta(i).data.forEach((bar,j)=>{
+    const v=ds.data[j]; if(v==null) return; ctx.fillText(fM(v),bar.x,bar.y-4); }); });
+  ctx.restore();}};
+function gChart(prev,canvasId,rows,l25,lM,lR,colR){
+  if(prev) prev.destroy();
+  const pc=(a,b)=>{const p=gPct(a,b);return p==null?'—':fP(p);};
+  // El eje X lleva el grupo y, debajo, el % vs 2025 y % vs Meta
+  const labels=rows.map(r=>[r.name,'vs 25: '+pc(r.R,r.b),'vs Meta: '+pc(r.R,r.M)]);
+  return new Chart(document.getElementById(canvasId),{type:'bar',plugins:[GVAL_PLUGIN],data:{labels,datasets:[
+    {label:l25,data:rows.map(r=>r.b),backgroundColor:'#b0bec5',borderRadius:3},
+    {label:lM,data:rows.map(r=>r.M),backgroundColor:'rgba(230,81,0,.65)',borderRadius:3},
+    {label:lR,data:rows.map(r=>r.R),backgroundColor:colR,borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:14}},
+      plugins:{legend:{labels:{font:{size:9.5},boxWidth:10}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fM(c.raw)}`}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{ticks:{font:{size:9.5},callback:v=>fM(v)},grid:{color:'#f0f0f0'}}}}});
+}
+function buildGBar(){
+  document.getElementById('gmbtn').innerHTML=PARSED.months.map((m,i)=>
+    `<button class="mf ${i===GSEL?'on':''}" onclick="gSelect(${i})">${m.mName}${m.isClosed?'':' *'}</button>`).join('');
+}
+function gSelect(i){ GSEL=i; buildGBar(); renderCharts(); }
+function renderCharts(){
+  if(!PARSED) return;
+  if(GSEL==null||!PARSED.months[GSEL]) GSEL=PARSED.latestMIdx;
+  const d=PARSED.months[GSEL], mn=d.mName, ic=d.isClosed;
+  buildGBar();
+  const cmpTxt=ic?'':` · vs 2025 ${cmpName()}`;
+  document.getElementById('gey1').textContent=ic?`${mn} cierre`:`${mn} MTD · 1–${d.dEl} de ${d.dInM} días${cmpTxt}`;
+  document.getElementById('ctjul').textContent=`${mn} ${ic?'cierre':'MTD'} — Real vs 2025 vs Meta`;
+  document.getElementById('gey2').textContent=`YTD ene–${mn.toLowerCase().slice(0,3)} 2026${cmpTxt}`;
+  document.getElementById('ctytd').textContent=`YTD ${mn} — Real vs 2025 vs Meta`;
+  const mtd=gAgg(d,{R:'mtdR',b:'mtd25',M:'mtdMeta'}), ytd=gAgg(d,{R:'ytdR',b:'ytd25',M:'ytdM'}), fy=gAgg(d,{R:'fyP',b:'fy25',M:'fyM'});
+  CJ1=gChart(CJ1,'cjul',mtd,'2025','Meta','Real','#1a237e');
+  CJ2=gChart(CJ2,'cytd',ytd,'YTD 2025','Meta YTD','Real YTD','#1565c0');
+  document.getElementById('gtb1').innerHTML=gTable(mtd,'2025','Meta','Real','gt1');
+  document.getElementById('gtb2').innerHTML=gTable(ytd,'YTD 25','Meta YTD','Real YTD','gt2');
+  // Proyección del mes en curso vs meta del mes (solo mes abierto)
+  const showPm=!ic&&d.total&&d.total.pV!=null;
+  document.getElementById('gpm').style.display=showPm?'':'none';
+  if(showPm){
+    const pm=gAgg(d,{R:'pV',b:'p25',M:'pM'});
+    document.getElementById('gey4').textContent=`Proyección ${mn} 2026`;
+    document.getElementById('gct4').textContent=`Proy ${mn} vs 2025 vs Meta del mes · ${d.dEl} de ${d.dInM} días transcurridos${cmpTxt}`;
+    CJ4=gChart(CJ4,'cpm',pm,`${mn} 2025`,`Meta ${mn}`,`Proy ${mn}`,'#00695c');
+    document.getElementById('gtb4').innerHTML=gTable(pm,`${mn} 25`,`Meta ${mn}`,`Proy ${mn}`,'gt4');
+  } else if(CJ4){ CJ4.destroy(); CJ4=null; }
+  // La proyección FY solo aplica al mes en curso
+  const showFy=(GSEL===PARSED.latestMIdx);
+  document.getElementById('gfy').style.display=showFy?'':'none';
+  if(showFy){
+    CJ3=gChart(CJ3,'cfy',fy,'2025','Meta FY','Proy FY','#37474f');
+    document.getElementById('gtb3').innerHTML=gTable(fy,'2025','Meta FY','Proy FY','gt3');
+  } else if(CJ3){ CJ3.destroy(); CJ3=null; }
 }
 
 // ── Daily view ────────────────────────────────────────────────────
@@ -2089,12 +2160,11 @@ function buildMonthBar(){
 function selectMonth(idx){
   SEL=idx; EXP.mkp=false;EXP.meli=false;EXP.amazon=false;
   buildMonthBar(); renderTable(PARSED.months[idx]);
-  renderCharts(PARSED.months[PARSED.latestMIdx]);
 }
 function render(p){
-  PARSED=p; SEL=p.latestMIdx; DXD_SEL=p.latestMIdx;
+  PARSED=p; SEL=p.latestMIdx; DXD_SEL=p.latestMIdx; GSEL=p.latestMIdx;
   syncCmpButtons();
-  buildMonthBar(); selectMonth(SEL);
+  buildMonthBar(); selectMonth(SEL); renderCharts();
   buildDatePicker(); renderDailyFull();
   buildMonthBarDxd(); renderDayByDay(DXD_SEL);
   renderYearByChannel();
@@ -2179,6 +2249,7 @@ function showSlide(n){
     document.getElementById('bs'+i).classList.toggle('on',i===n);
   });
   if(n===4&&PARSED) renderYearByChannel();
+  if(n===2&&PARSED) renderCharts();
 }
 
 // Copy as image
